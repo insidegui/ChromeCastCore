@@ -1,0 +1,6 @@
+[submodule "Vendor/Protobuf"]
+	path = Vendor/Protobuf
+	url = https://github.com/alexeyxo/protobuf-swift.git
+[submodule "Vendor/SwiftyJSON"]
+	path = Vendor/SwiftyJSON
+	url = https://github.com/SwiftyJSON/SwiftyJSON.git
