@@ -437,7 +437,7 @@ public final class CastClient: NSObject {
             CastJSONPayloadKeys.type: CastMessageType.stop.rawValue,
             CastJSONPayloadKeys.sessionId: app.sessionId
         ]
-        let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: app.transportId, payload: payload)
+        let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiverName, payload: payload)
         
         send(request: request, response: nil)
     }
