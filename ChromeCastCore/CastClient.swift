@@ -529,7 +529,7 @@ public final class CastClient: NSObject {
             if !self.isConnected {
                 self.isConnected = true
             }
-            NSLog("PONG from \(originalMessage.sourceId)")
+//            NSLog("PONG from \(originalMessage.sourceId)")
         case .close:
             // disconnected
             if self.isConnected {
