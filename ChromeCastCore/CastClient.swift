@@ -227,7 +227,7 @@ public final class CastClient: NSObject {
         return CASTV2PlatformReader(stream: self.inputStream)
     }()
     
-    public func readStream() {
+    fileprivate func readStream() {
         do {
             reader.readStream()
             
@@ -416,6 +416,22 @@ public final class CastClient: NSObject {
         }
     }
     
+    public func launchApp(identifier: String, completionHandler: @escaping @convention(block) (NSError?, CastApp?) -> Void) {
+        // this method is provided for objective-c compatibility
+        guard let id = CastAppIdentifier(rawValue: identifier) else {
+            NSLog("Invalid app identifier: \(identifier)")
+            return
+        }
+        
+        launch(appId: id) { (error, app) in
+            if let error = error {
+                completionHandler(error as NSError, nil)
+            } else {
+                completionHandler(nil, app)
+            }
+        }
+    }
+    
     public func load(media: CastMedia, with app: CastApp, completion: @escaping (CastError?, CastMediaStatus?) -> Void) {
         guard outputStream != nil else { return }
         
@@ -438,6 +454,17 @@ public final class CastClient: NSObject {
             let mediaStatus = CastMediaStatus(json: json)
             completion(nil, mediaStatus)
         }
+    }
+    
+    public func loadMedia(_ media: CastMedia, usingApp app: CastApp, completionHandler: @escaping @convention(block) (NSError?, CastMediaStatus?) -> Void) {
+        // this method is provided for objective-c compatibility
+        load(media: media, with: app, completion: { error, status in
+            if let error = error {
+                completionHandler(error as NSError, nil)
+            } else {
+                completionHandler(nil, status)
+            }
+        })
     }
     
     public func requestMediaStatus(for app: CastApp, mediaSessionId: Int, completion: ((CastError?, CastMediaStatus?) -> Void)? = nil) {
@@ -464,6 +491,11 @@ public final class CastClient: NSObject {
             let mediaStatus = CastMediaStatus(json: json)
             completion?(nil, mediaStatus)
         }
+    }
+    
+    public func requestMediaStatusForApp(_ app: CastApp, mediaSessionId: Int) {
+        // this method is provided for objective-c compatibility
+        requestMediaStatus(for: app, mediaSessionId: mediaSessionId, completion: nil)
     }
     
     public func requestStatus() throws {
