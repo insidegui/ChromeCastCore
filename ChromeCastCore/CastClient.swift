@@ -432,6 +432,21 @@ public final class CastClient: NSObject {
         }
     }
     
+    @nonobjc public func stop(app: CastApp) {
+        let payload: [String: Any] = [
+            CastJSONPayloadKeys.type: CastMessageType.stop.rawValue,
+            CastJSONPayloadKeys.sessionId: app.sessionId
+        ]
+        let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: app.transportId, payload: payload)
+        
+        send(request: request, response: nil)
+    }
+    
+    public func stopApp(_ app: CastApp) {
+        // this method is provided for objective-c compatibility
+        stop(app: app)
+    }
+    
     public func load(media: CastMedia, with app: CastApp, completion: @escaping (CastError?, CastMediaStatus?) -> Void) {
         guard outputStream != nil else { return }
         

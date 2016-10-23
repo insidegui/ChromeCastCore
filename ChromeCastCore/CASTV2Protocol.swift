@@ -22,6 +22,7 @@ enum CastMessageType: String {
     case close = "CLOSE"
     case status = "RECEIVER_STATUS"
     case launch = "LAUNCH"
+    case stop = "STOP"
     case load = "LOAD"
     case statusRequest = "GET_STATUS"
     case availableApps = "GET_APP_AVAILABILITY"
