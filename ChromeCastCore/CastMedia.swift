@@ -8,6 +8,9 @@
 
 import Foundation
 
+public let CastMediaStreamTypeBuffered = "BUFFERED"
+public let CastMediaStreamTypeLive = "LIVE"
+
 public enum CastMediaStreamType: String {
     case buffered = "BUFFERED"
     case live = "LIVE"
@@ -33,6 +36,13 @@ public final class CastMedia: NSObject {
         self.streamType = streamType
         self.autoplay = autoplay
         self.currentTime = currentTime
+    }
+    
+    public convenience init(title: String, url: URL, poster: URL, contentType: String, streamType: String, autoplay: Bool, currentTime: Double) {
+        guard let type = CastMediaStreamType(rawValue: streamType) else {
+            fatalError("Invalid media stream type \(streamType)")
+        }
+        self.init(title: title, url: url, poster: poster, contentType: contentType, streamType: type, autoplay: autoplay, currentTime: currentTime)
     }
     
 }
