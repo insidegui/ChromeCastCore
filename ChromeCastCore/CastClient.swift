@@ -531,9 +531,11 @@ public final class CastClient: NSObject {
             }
 //            NSLog("PONG from \(originalMessage.sourceId)")
         case .close:
-            // disconnected
-            if self.isConnected {
-                self.isConnected = false
+            if originalMessage.sourceId == CastConstants.receiverName {
+                // device disconnected
+                if self.isConnected {
+                    self.isConnected = false
+                }
             }
         case .status:
             self.currentStatus = CastStatus(json: json)
