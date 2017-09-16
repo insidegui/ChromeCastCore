@@ -23,7 +23,46 @@
 		DDD1B81C1DB911F4002D3E6B /* Extensions.Api.CastChannel.CastChannel.proto.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD1B81B1DB911F4002D3E6B /* Extensions.Api.CastChannel.CastChannel.proto.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		7A2414C81F6DD62B002D3ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A2414C01F6DD62B002D3ECC /* ProtocolBuffers.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3F85569919C71BCF003802F2;
+			remoteInfo = ProtocolBuffers;
+		};
+		7A2414CA1F6DD62B002D3ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A2414C01F6DD62B002D3ECC /* ProtocolBuffers.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3F8556A419C71BCF003802F2;
+			remoteInfo = UnitTesting;
+		};
+		7A2414CC1F6DD62B002D3ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A2414C01F6DD62B002D3ECC /* ProtocolBuffers.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3F41061C1A1A667700742090;
+			remoteInfo = "ProtocolBuffers(OSX)";
+		};
+		7A2414CE1F6DD62B002D3ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A2414C01F6DD62B002D3ECC /* ProtocolBuffers.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3F4106261A1A667800742090;
+			remoteInfo = "UnitTesting(OSX)";
+		};
+		7A2414D01F6DD62B002D3ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A2414C01F6DD62B002D3ECC /* ProtocolBuffers.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3F31A1A91BA199C000F477C1;
+			remoteInfo = "ProtocolBuffers(watchOS)";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		7A2414C01F6DD62B002D3ECC /* ProtocolBuffers.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ProtocolBuffers.xcodeproj; path = Vendor/Protobuf/plugin/ProtocolBuffers/ProtocolBuffers.xcodeproj; sourceTree = "<group>"; };
 		DD15225C1DBACFE4004B5762 /* CASTV2Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CASTV2Protocol.swift; sourceTree = "<group>"; };
 		DD15225E1DBAD013004B5762 /* CastStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CastStatus.swift; sourceTree = "<group>"; };
 		DD1522601DBAD02D004B5762 /* CastApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CastApp.swift; sourceTree = "<group>"; };
@@ -58,6 +97,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7A2414C11F6DD62B002D3ECC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7A2414C91F6DD62B002D3ECC /* ProtocolBuffers.framework */,
+				7A2414CB1F6DD62B002D3ECC /* ProtocolBuffersTests.xctest */,
+				7A2414CD1F6DD62B002D3ECC /* ProtocolBuffers.framework */,
+				7A2414CF1F6DD62B002D3ECC /* UnitTesting(OSX).xctest */,
+				7A2414D11F6DD62B002D3ECC /* ProtocolBuffers.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		DD1522621DBAD03D004B5762 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -90,6 +141,7 @@
 		DD674A2E1DB7E83400E1FC24 = {
 			isa = PBXGroup;
 			children = (
+				7A2414C01F6DD62B002D3ECC /* ProtocolBuffers.xcodeproj */,
 				DD674A3A1DB7E83500E1FC24 /* ChromeCastCore */,
 				DD674A391DB7E83500E1FC24 /* Products */,
 				DDC239581DB8F73A00066B2F /* Frameworks */,
@@ -216,12 +268,56 @@
 			mainGroup = DD674A2E1DB7E83400E1FC24;
 			productRefGroup = DD674A391DB7E83500E1FC24 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7A2414C11F6DD62B002D3ECC /* Products */;
+					ProjectRef = 7A2414C01F6DD62B002D3ECC /* ProtocolBuffers.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				DD674A371DB7E83400E1FC24 /* ChromeCastCore */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		7A2414C91F6DD62B002D3ECC /* ProtocolBuffers.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ProtocolBuffers.framework;
+			remoteRef = 7A2414C81F6DD62B002D3ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A2414CB1F6DD62B002D3ECC /* ProtocolBuffersTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ProtocolBuffersTests.xctest;
+			remoteRef = 7A2414CA1F6DD62B002D3ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A2414CD1F6DD62B002D3ECC /* ProtocolBuffers.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ProtocolBuffers.framework;
+			remoteRef = 7A2414CC1F6DD62B002D3ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A2414CF1F6DD62B002D3ECC /* UnitTesting(OSX).xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "UnitTesting(OSX).xctest";
+			remoteRef = 7A2414CE1F6DD62B002D3ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A2414D11F6DD62B002D3ECC /* ProtocolBuffers.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ProtocolBuffers.framework;
+			remoteRef = 7A2414D01F6DD62B002D3ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		DD674A361DB7E83400E1FC24 /* Resources */ = {
