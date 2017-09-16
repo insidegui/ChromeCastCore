@@ -1867,7 +1867,25 @@ public extension Extensions.Api.CastChannel {
   }
 
 }
+extension Extensions.Api.CastChannel.CastMessage.Builder : GeneratedMessageBuilderProtocol {
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+    set(newValue) {
+      return
+    }
+  }
+}
 extension Extensions.Api.CastChannel.CastMessage: GeneratedMessageProtocol {
+  public typealias BuilderType = Extensions.Api.CastChannel.CastMessage.Builder
+
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+  }
+
   public class func parseArrayDelimitedFrom(inputStream: InputStream) throws -> Array<Extensions.Api.CastChannel.CastMessage> {
     var mergedArray = Array<Extensions.Api.CastChannel.CastMessage>()
     while let value = try parseDelimitedFrom(inputStream: inputStream) {
@@ -1897,7 +1915,25 @@ extension Extensions.Api.CastChannel.CastMessage: GeneratedMessageProtocol {
     return try Extensions.Api.CastChannel.CastMessage.Builder().mergeFrom(codedInputStream: codedInputStream, extensionRegistry:extensionRegistry).build()
   }
 }
+extension Extensions.Api.CastChannel.AuthChallenge.Builder: GeneratedMessageBuilderProtocol {
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+    set(newValue) {
+      return
+    }
+  }
+}
 extension Extensions.Api.CastChannel.AuthChallenge: GeneratedMessageProtocol {
+  public typealias BuilderType = Extensions.Api.CastChannel.AuthChallenge.Builder
+
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+  }
+
   public class func parseArrayDelimitedFrom(inputStream: InputStream) throws -> Array<Extensions.Api.CastChannel.AuthChallenge> {
     var mergedArray = Array<Extensions.Api.CastChannel.AuthChallenge>()
     while let value = try parseDelimitedFrom(inputStream: inputStream) {
@@ -1927,7 +1963,25 @@ extension Extensions.Api.CastChannel.AuthChallenge: GeneratedMessageProtocol {
     return try Extensions.Api.CastChannel.AuthChallenge.Builder().mergeFrom(codedInputStream: codedInputStream, extensionRegistry:extensionRegistry).build()
   }
 }
+extension Extensions.Api.CastChannel.AuthResponse.Builder : GeneratedMessageBuilderProtocol {
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+    set(newValue) {
+      return
+    }
+  }
+}
 extension Extensions.Api.CastChannel.AuthResponse: GeneratedMessageProtocol {
+  public typealias BuilderType = Extensions.Api.CastChannel.AuthResponse.Builder
+
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+  }
+
   public class func parseArrayDelimitedFrom(inputStream: InputStream) throws -> Array<Extensions.Api.CastChannel.AuthResponse> {
     var mergedArray = Array<Extensions.Api.CastChannel.AuthResponse>()
     while let value = try parseDelimitedFrom(inputStream: inputStream) {
@@ -1957,7 +2011,25 @@ extension Extensions.Api.CastChannel.AuthResponse: GeneratedMessageProtocol {
     return try Extensions.Api.CastChannel.AuthResponse.Builder().mergeFrom(codedInputStream: codedInputStream, extensionRegistry:extensionRegistry).build()
   }
 }
+extension Extensions.Api.CastChannel.AuthError.Builder: GeneratedMessageBuilderProtocol {
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+    set(newValue) {
+      return
+    }
+  }
+}
 extension Extensions.Api.CastChannel.AuthError: GeneratedMessageProtocol {
+  public typealias BuilderType = Extensions.Api.CastChannel.AuthError.Builder
+
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+  }
+
   public class func parseArrayDelimitedFrom(inputStream: InputStream) throws -> Array<Extensions.Api.CastChannel.AuthError> {
     var mergedArray = Array<Extensions.Api.CastChannel.AuthError>()
     while let value = try parseDelimitedFrom(inputStream: inputStream) {
@@ -1987,7 +2059,23 @@ extension Extensions.Api.CastChannel.AuthError: GeneratedMessageProtocol {
     return try Extensions.Api.CastChannel.AuthError.Builder().mergeFrom(codedInputStream: codedInputStream, extensionRegistry:extensionRegistry).build()
   }
 }
+extension Extensions.Api.CastChannel.DeviceAuthMessage.Builder : GeneratedMessageBuilderProtocol {
+  public subscript(key: String) -> Any? {
+    get {
+      return nil
+    }
+    set(newValue) {
+      return
+    }
+  }
+}
 extension Extensions.Api.CastChannel.DeviceAuthMessage: GeneratedMessageProtocol {
+  public typealias BuilderType = Extensions.Api.CastChannel.DeviceAuthMessage.Builder
+
+  public subscript(key: String) -> Any? {
+    return nil
+  }
+
   public class func parseArrayDelimitedFrom(inputStream: InputStream) throws -> Array<Extensions.Api.CastChannel.DeviceAuthMessage> {
     var mergedArray = Array<Extensions.Api.CastChannel.DeviceAuthMessage>()
     while let value = try parseDelimitedFrom(inputStream: inputStream) {
