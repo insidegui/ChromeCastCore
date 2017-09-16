@@ -189,7 +189,7 @@ public final class CastClient: NSObject {
         let packet = NSMutableData(bytes: &payloadSize, length: MemoryLayout<UInt32>.size)
         packet.append(data)
         
-        let streamBytes = unsafeBitCast(packet.bytes, to: UnsafePointer<UInt8>.self)
+        let streamBytes = packet.bytes.assumingMemoryBound(to: UInt8.self)
         
         if outputStream.write(streamBytes, maxLength: packet.length) < 0 {
             if let error = outputStream.streamError {
@@ -598,7 +598,7 @@ extension CastClient: StreamDelegate {
                 }
             }
         case Stream.Event.errorOccurred:
-            NSLog("Stream error occurred: \(aStream.streamError)")
+            NSLog("Stream error occurred: \(String(describing: aStream.streamError))")
         case Stream.Event.hasBytesAvailable:
             socketQueue.async {
                 self.readStream()
