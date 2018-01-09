@@ -20,8 +20,7 @@ extension CastDevice {
 }
 
 public final class CastDeviceScanner: NSObject {
-    
-    public static let DeviceListDidChange = Notification.Name(rawValue: "DeviceScannerDeviceListDidChangeNotification")
+    public static let deviceListDidChange = Notification.Name(rawValue: "DeviceScannerDeviceListDidChangeNotification")
     
     private lazy var browser: NetServiceBrowser = {
         let b = NetServiceBrowser()
@@ -38,7 +37,7 @@ public final class CastDeviceScanner: NSObject {
     
     public fileprivate(set) var devices = [CastDevice]() {
         didSet {
-            NotificationCenter.default.post(name: CastDeviceScanner.DeviceListDidChange, object: self)
+            NotificationCenter.default.post(name: CastDeviceScanner.deviceListDidChange, object: self)
         }
     }
     
