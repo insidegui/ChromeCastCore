@@ -595,7 +595,7 @@ extension CastClient: StreamDelegate {
                 }
             }
         case Stream.Event.errorOccurred:
-            NSLog("Stream error occurred: \(aStream.streamError)")
+            NSLog("Stream error occurred: \(aStream.streamError.debugDescription)")
         case Stream.Event.hasBytesAvailable:
             socketQueue.async {
                 self.readStream()
