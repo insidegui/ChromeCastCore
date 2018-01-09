@@ -12,6 +12,7 @@ import SwiftyJSON
 public enum CastAppIdentifier: String {
     case defaultMediaPlayer = "CC1AD845"
     case youTube = "YouTube"
+    case googleAssistant = "97216CB6"
 }
 
 public final class CastApp: NSObject {
