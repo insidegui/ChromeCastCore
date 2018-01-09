@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 public enum CastMediaPlayerState: String {
     case buffering = "BUFFERING"

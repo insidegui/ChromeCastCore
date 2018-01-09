@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import ProtocolBuffers
+import SwiftProtobuf
+import SwiftyJSON
 
-public typealias CastMessage = Extensions.Api.CastChannel.CastMessage
-private typealias CastMessageBuilder = Extensions.Api.CastChannel.CastMessage.Builder
+typealias CastMessage = Extensions_Api_CastChannel_CastMessage
 
 public enum CastError: Error {
     case connection(String)
@@ -189,7 +189,7 @@ public final class CastClient: NSObject {
         let packet = NSMutableData(bytes: &payloadSize, length: MemoryLayout<UInt32>.size)
         packet.append(data)
         
-        let streamBytes = unsafeBitCast(packet.bytes, to: UnsafePointer<UInt8>.self)
+        let streamBytes = packet.bytes.bindMemory(to: UInt8.self, capacity: data.count)
         
         if outputStream.write(streamBytes, maxLength: packet.length) < 0 {
             if let error = outputStream.streamError {
@@ -232,10 +232,9 @@ public final class CastClient: NSObject {
             reader.readStream()
             
             while let payload = reader.nextMessage() {
-                let builder = try messageBuilder().mergeFrom(data: payload)
-                let message = builder.buildPartial()
+                let message = try CastMessage(serializedData: payload)
     
-                if message.payloadType == .String {
+                if message.payloadType == .string {
                     if let messageData = message.payloadUtf8.data(using: .utf8) {
                         handleJSONMessage(with: messageData, originalMessage: message)
                     } else {
@@ -295,11 +294,7 @@ public final class CastClient: NSObject {
         
         return String(data: data, encoding: .utf8)!
     }
-    
-    private func messageBuilder() -> CastMessageBuilder {
-        return CastMessageBuilder()
-    }
-    
+  
     private lazy var senderName: String = {
         let rand = arc4random_uniform(90)
         return "sender-\(rand)"
@@ -321,17 +316,19 @@ public final class CastClient: NSObject {
         
 //        NSLog("\(effectivePayload)")
         
-        let builder = messageBuilder()
-        builder.protocolVersion = .castv210
-        builder.sourceId = senderName
-        builder.destinationId = destinationId
-        builder.namespace = namespace.rawValue
-        builder.payloadType = .String
-        builder.payloadUtf8 = load
+      let message = CastMessage.with {
+        $0.protocolVersion = .castv210
+        $0.sourceID = senderName
+        $0.destinationID = destinationId
+        $0.namespace = namespace.rawValue
+        $0.payloadType = .string
+        $0.payloadUtf8 = load
         // even though we are not using the binary payload for anything, the builder will crash if we don't specify one
-        builder.payloadBinary = Data()
+        $0.payloadBinary = Data()
+      }
+
         
-        return try builder.build().data()
+        return try message.serializedData()
     }
     
     private lazy var currentRequestId = Int(arc4random_uniform(800))
@@ -527,7 +524,7 @@ public final class CastClient: NSObject {
         guard let data = json else { return }
         guard data.count > 0 else { return }
         
-        let json = JSON(data: data)
+        let json = try! JSON(data: data)
         
         if let requestId = json[CastJSONPayloadKeys.requestId].int {
 //            NSLog("Received response for previously sent request \(requestId), calling handler")
@@ -546,7 +543,7 @@ public final class CastClient: NSObject {
             }
 //            NSLog("PONG from \(originalMessage.sourceId)")
         case .close:
-            if originalMessage.sourceId == CastConstants.receiverName {
+            if originalMessage.sourceID == CastConstants.receiverName {
                 // device disconnected
                 if self.isConnected {
                     self.isConnected = false

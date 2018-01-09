@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 public enum CastAppIdentifier: String {
     case defaultMediaPlayer = "CC1AD845"

@@ -1,0 +1,9 @@
+{
+  "commitish" : "1.0.2",
+  "Mac" : [
+    {
+      "name" : "SwiftProtobuf",
+      "hash" : "80486c10b78fb649434ec9be416244fb27359b27337e137a5fdabced0e71836d"
+    }
+  ]
+}
