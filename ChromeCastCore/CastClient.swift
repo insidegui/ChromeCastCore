@@ -443,7 +443,32 @@ public final class CastClient: NSObject {
         // this method is provided for objective-c compatibility
         stop(app: app)
     }
+  
+  public func connectMediaChannel(for app: CastApp, completion: ((CastError?, CastMediaStatus?) -> Void)? = nil) {
+    guard outputStream != nil else { return }
     
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.connect.rawValue,
+      CastJSONPayloadKeys.sessionId: app.sessionId
+    ]
+    
+    let request = CastRequest(id: nextRequestId(), namespace: .media, destinationId: app.transportId, payload: payload)
+    send(request: request) { error, json in
+      guard error == nil, let json = json else {
+        if let error = error {
+          completion?(CastError.load(error.localizedDescription), nil)
+        } else {
+          completion?(CastError.load("Unkown error"), nil)
+        }
+        
+        return
+      }
+      
+      let mediaStatus = CastMediaStatus(json: json)
+      completion?(nil, mediaStatus)
+    }
+  }
+  
     public func load(media: CastMedia, with app: CastApp, completion: @escaping (CastError?, CastMediaStatus?) -> Void) {
         guard outputStream != nil else { return }
         
