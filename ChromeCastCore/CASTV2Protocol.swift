@@ -57,6 +57,8 @@ struct CastJSONPayloadKeys {
     static let level = "level"
     static let muted = "muted"
     static let mediaSessionId = "mediaSessionId"
+    static let availability = "availability"
+    static let name = "name"
 }
 
 struct CastConstants {

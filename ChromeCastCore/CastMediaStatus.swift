@@ -22,6 +22,7 @@ public final class CastMediaStatus: NSObject {
     public var playbackRate: Int = 1
     public var playerState: CastMediaPlayerState = .buffering
     public var currentTime: Double = 0
+    public var metadata: JSON?
     
     public var state: String {
         return playerState.rawValue
@@ -37,7 +38,7 @@ extension CastMediaStatus {
     
     convenience init(json: JSON) {
         self.init()
-        
+      
         guard let status = json.array?.first else { return }
         
         if let sessionId = status["mediaSessionId"].int {
@@ -57,6 +58,8 @@ extension CastMediaStatus {
         if let currentTime = status["currentTime"].double {
             self.currentTime = currentTime
         }
+
+        self.metadata = status["media"]["metadata"]
     }
     
 }

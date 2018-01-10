@@ -23,6 +23,7 @@ public final class CastApp: NSObject {
     public var sessionId: String = ""
     public var statusText: String = ""
     public var transportId: String = ""
+    public var namespaces = [String]()
     
 }
 
@@ -54,10 +55,14 @@ extension CastApp {
         if let transportId = json[CastJSONPayloadKeys.transportId].string {
             self.transportId = transportId
         }
+      
+        if let namespaces = json[CastJSONPayloadKeys.namespaces].array {
+          self.namespaces = namespaces.flatMap { $0[CastJSONPayloadKeys.name].string }
+          }
     }
     
     public override var description: String {
-        return "CastApp(id: \(id), displayName: \(displayName), isIdleScreen: \(isIdleScreen), sessionId: \(sessionId), statusText: \(statusText), transportId: \(transportId))"
+      return "CastApp(id: \(id), displayName: \(displayName), isIdleScreen: \(isIdleScreen), sessionId: \(sessionId), statusText: \(statusText), transportId: \(transportId), namespaces: \(namespaces)"
     }
     
 }

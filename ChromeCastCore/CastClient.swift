@@ -53,6 +53,7 @@ public final class CastClient: NSObject {
     
     public let device: CastDevice
     public weak var delegate: CastClientDelegate?
+    public var connectedApp: CastApp?
     
     public init(device: CastDevice) {
         self.device = device
@@ -365,7 +366,12 @@ public final class CastClient: NSObject {
         responseHandlers[request.id] = response
         
         do {
+          //Don't want requestId for connect
+          if request.namespace != .connection {
             request.payload[CastJSONPayloadKeys.requestId] = request.id
+          }
+          
+          
             let message = try jsonMessage(with: request.payload, namespace: request.namespace, destinationId: request.destinationId)
             try write(data: message)
         } catch {
@@ -381,7 +387,69 @@ public final class CastClient: NSObject {
     }
     
     // MARK: - Public messages
+
+  public func getAppAvailability(apps: [CastApp], completion: @escaping (CastError?, AppAvailability?) -> Void) {
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.availableApps.rawValue,
+      CastJSONPayloadKeys.appId: apps.map { $0.id }
+    ]
     
+    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiverName, payload: payload)
+    
+    send(request: request) { (error, json) in
+      guard error == nil, let json = json else {
+        if let error = error {
+          completion(CastError.launch(error.localizedDescription), nil)
+        } else {
+          completion(CastError.launch("Unkown error"), nil)
+        }
+        
+        return
+      }
+
+      let availability = AppAvailability(json: json)
+      
+      completion(nil, availability)
+    }
+  }
+  
+  public func join(app: CastApp, completion: @escaping (CastError?, CastApp?) -> Void) {
+    if let currentApp = currentStatus?.apps.first(where: { $0.id == app.id }) {
+      connectedApp = currentApp
+      connect(to: currentApp)
+      completion(nil, currentApp)
+    } else {
+      let payload: [String: Any] = [
+        CastJSONPayloadKeys.type: CastMessageType.statusRequest.rawValue
+      ]
+      
+      let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiverName, payload: payload)
+      
+      send(request: request) { [weak self] (error, json) in
+        guard error == nil, let json = json else {
+          if let error = error {
+            completion(CastError.launch(error.localizedDescription), nil)
+          } else {
+            completion(CastError.launch("Unkown error"), nil)
+          }
+          
+          return
+        }
+        
+        let status = CastStatus(json: json)
+        
+        guard let app = status.apps.first else {
+          completion(CastError.launch("Unable to get launched app instance"), nil)
+          return
+        }
+        
+        self?.connectedApp = app
+        self?.connect(to: app)
+        completion(nil, app)
+      }
+    }
+  }
+  
     public func launch(appId: CastAppIdentifier, completion: @escaping (CastError?, CastApp?) -> Void) {
         let payload: [String: Any] = [
             CastJSONPayloadKeys.type: CastMessageType.launch.rawValue,
@@ -444,30 +512,11 @@ public final class CastClient: NSObject {
         stop(app: app)
     }
   
-  public func connectMediaChannel(for app: CastApp, completion: ((CastError?, CastMediaStatus?) -> Void)? = nil) {
-    guard outputStream != nil else { return }
-    
-    let payload: [String: Any] = [
-      CastJSONPayloadKeys.type: CastMessageType.connect.rawValue,
-      CastJSONPayloadKeys.sessionId: app.sessionId
-    ]
-    
-    let request = CastRequest(id: nextRequestId(), namespace: .media, destinationId: app.transportId, payload: payload)
-    send(request: request) { error, json in
-      guard error == nil, let json = json else {
-        if let error = error {
-          completion?(CastError.load(error.localizedDescription), nil)
-        } else {
-          completion?(CastError.load("Unkown error"), nil)
-        }
-        
-        return
-      }
+    public func stopCurrentApp() {
+      guard let app = currentStatus?.apps.first else { return }
       
-      let mediaStatus = CastMediaStatus(json: json)
-      completion?(nil, mediaStatus)
+      stop(app: app)
     }
-  }
   
     public func load(media: CastMedia, with app: CastApp, completion: @escaping (CastError?, CastMediaStatus?) -> Void) {
         guard outputStream != nil else { return }
@@ -504,14 +553,17 @@ public final class CastClient: NSObject {
         })
     }
     
-    public func requestMediaStatus(for app: CastApp, mediaSessionId: Int, completion: ((CastError?, CastMediaStatus?) -> Void)? = nil) {
+    public func requestMediaStatus(for app: CastApp, mediaSessionId: Int? = nil, completion: ((CastError?, CastMediaStatus?) -> Void)? = nil) {
         guard outputStream != nil else { return }
         
-        let payload: [String: Any] = [
+        var payload: [String: Any] = [
             CastJSONPayloadKeys.type: CastMessageType.statusRequest.rawValue,
-            CastJSONPayloadKeys.mediaSessionId: mediaSessionId,
             CastJSONPayloadKeys.sessionId: app.sessionId
         ]
+      
+        if let mediaSessionId = mediaSessionId {
+           payload[CastJSONPayloadKeys.mediaSessionId] = mediaSessionId
+        }
         
         let request = CastRequest(id: nextRequestId(), namespace: .media, destinationId: app.transportId, payload: payload)
         send(request: request) { error, json in
