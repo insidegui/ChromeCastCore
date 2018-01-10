@@ -8,13 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		0212809A2006B402002FC4AF /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0289007C200551B80024D80F /* SwiftyJSON.framework */; };
+		021280B62006DBA1002FC4AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 021280B12006DBA1002FC4AF /* Assets.xcassets */; };
+		021280B72006DBA1002FC4AF /* StatusItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021280B22006DBA1002FC4AF /* StatusItemView.swift */; };
+		021280B82006DBA1002FC4AF /* IconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021280B32006DBA1002FC4AF /* IconView.swift */; };
+		021280B92006DBA1002FC4AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021280B42006DBA1002FC4AF /* AppDelegate.swift */; };
+		021280BA2006DBA1002FC4AF /* StatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021280B52006DBA1002FC4AF /* StatusItemController.swift */; };
 		024CB2ED2005A43D00FF73EE /* AppAvailability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024CB2EC2005A43D00FF73EE /* AppAvailability.swift */; };
 		0289007720054A960024D80F /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 0289007620054A960024D80F /* Cartfile */; };
 		0289007920054B870024D80F /* SwiftProtobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0289007820054B870024D80F /* SwiftProtobuf.framework */; };
 		0289007B20054B970024D80F /* cast_channel.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0289007A20054B970024D80F /* cast_channel.pb.swift */; };
 		0289007D200551B90024D80F /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0289007C200551B80024D80F /* SwiftyJSON.framework */; };
-		028900A9200575090024D80F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028900A8200575090024D80F /* AppDelegate.swift */; };
-		028900AB200575090024D80F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 028900AA200575090024D80F /* Assets.xcassets */; };
 		028900AE200575090024D80F /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028900AC200575090024D80F /* MainMenu.xib */; };
 		028900B4200575120024D80F /* ChromeCastCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD674A381DB7E83500E1FC24 /* ChromeCastCore.framework */; };
 		028900B5200575120024D80F /* ChromeCastCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD674A381DB7E83500E1FC24 /* ChromeCastCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -56,14 +59,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		021280B12006DBA1002FC4AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		021280B22006DBA1002FC4AF /* StatusItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusItemView.swift; sourceTree = "<group>"; };
+		021280B32006DBA1002FC4AF /* IconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconView.swift; sourceTree = "<group>"; };
+		021280B42006DBA1002FC4AF /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		021280B52006DBA1002FC4AF /* StatusItemController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusItemController.swift; sourceTree = "<group>"; };
 		024CB2EC2005A43D00FF73EE /* AppAvailability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAvailability.swift; sourceTree = "<group>"; };
 		0289007620054A960024D80F /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		0289007820054B870024D80F /* SwiftProtobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftProtobuf.framework; path = Carthage/Build/Mac/SwiftProtobuf.framework; sourceTree = "<group>"; };
 		0289007A20054B970024D80F /* cast_channel.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = cast_channel.pb.swift; sourceTree = "<group>"; };
 		0289007C200551B80024D80F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/Mac/SwiftyJSON.framework; sourceTree = "<group>"; };
 		028900A6200575090024D80F /* Sample App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sample App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		028900A8200575090024D80F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		028900AA200575090024D80F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		028900AD200575090024D80F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		028900AF200575090024D80F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		028900B0200575090024D80F /* Sample_App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sample_App.entitlements; sourceTree = "<group>"; };
@@ -107,8 +113,11 @@
 		028900A7200575090024D80F /* Sample App */ = {
 			isa = PBXGroup;
 			children = (
-				028900A8200575090024D80F /* AppDelegate.swift */,
-				028900AA200575090024D80F /* Assets.xcassets */,
+				021280B42006DBA1002FC4AF /* AppDelegate.swift */,
+				021280B12006DBA1002FC4AF /* Assets.xcassets */,
+				021280B32006DBA1002FC4AF /* IconView.swift */,
+				021280B52006DBA1002FC4AF /* StatusItemController.swift */,
+				021280B22006DBA1002FC4AF /* StatusItemView.swift */,
 				028900AC200575090024D80F /* MainMenu.xib */,
 				028900AF200575090024D80F /* Info.plist */,
 				028900B0200575090024D80F /* Sample_App.entitlements */,
@@ -279,6 +288,7 @@
 				TargetAttributes = {
 					028900A5200575090024D80F = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
@@ -318,7 +328,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				028900AB200575090024D80F /* Assets.xcassets in Resources */,
+				021280B62006DBA1002FC4AF /* Assets.xcassets in Resources */,
 				028900AE200575090024D80F /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -356,7 +366,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				028900A9200575090024D80F /* AppDelegate.swift in Sources */,
+				021280BA2006DBA1002FC4AF /* StatusItemController.swift in Sources */,
+				021280B92006DBA1002FC4AF /* AppDelegate.swift in Sources */,
+				021280B72006DBA1002FC4AF /* StatusItemView.swift in Sources */,
+				021280B82006DBA1002FC4AF /* IconView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,6 +420,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -420,6 +434,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.insideGUI.Sample-App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
@@ -431,6 +446,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
