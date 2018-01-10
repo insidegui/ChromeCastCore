@@ -257,7 +257,6 @@
 				DD674A341DB7E83400E1FC24 /* Frameworks */,
 				DD674A351DB7E83400E1FC24 /* Headers */,
 				DD674A361DB7E83400E1FC24 /* Resources */,
-				02890075200546E30024D80F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -335,19 +334,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		02890075200546E30024D80F /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = $SRCROOT/bootstrap.sh;
-		};
 		028900B9200575250024D80F /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
