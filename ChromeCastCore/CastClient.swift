@@ -419,7 +419,9 @@ public final class CastClient: NSObject {
       return
     }
     
-    if let existing = currentStatus?.apps.first(where: { $0.id == target.id }) {
+    if target == connectedApp {
+      completion(nil, target)
+    } else if let existing = currentStatus?.apps.first(where: { $0.id == target.id }) {
       connect(to: existing)
       completion(nil, existing)
     } else {
