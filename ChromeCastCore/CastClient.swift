@@ -450,6 +450,15 @@ public final class CastClient: NSObject {
     }
   }
   
+  public func joinCurrentApp(completion: @escaping (CastError?, CastApp?) -> Void) {
+    guard let currentApp = currentStatus?.apps.first else {
+      completion(CastError.connection("No App Running"), nil)
+      return
+    }
+    
+    join(app: currentApp, completion: completion)
+  }
+  
   public func launch(appId: CastAppIdentifier, completion: @escaping (CastError?, CastApp?) -> Void) {
     let payload: [String: Any] = [
       CastJSONPayloadKeys.type: CastMessageType.launch.rawValue,
