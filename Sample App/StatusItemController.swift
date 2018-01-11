@@ -91,19 +91,16 @@ extension StatusItemController: NSMenuDelegate {
 
 extension StatusItemController: CastClientDelegate {
   func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
-    guard client.connectedApp == nil else { return }
+    guard status.apps.count > 0, client.connectedApp == nil else { return }
     
-    guard let app = status.apps.first, app.id == CastAppIdentifier.googleAssistant.rawValue else { return }
-    
-    client.join(app: app) { (err, app) in
+    client.join() { (err, app) in
       guard let app = app else { return }
-      
+
       client.requestMediaStatus(for: app)
     }
   }
   
   func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
-    print(status.metadata?["title"].string)
     client.leave()
   }
 }

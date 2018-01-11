@@ -420,7 +420,6 @@ public final class CastClient: NSObject {
     }
     
     if let existing = currentStatus?.apps.first(where: { $0.id == target.id }) {
-      connectedApp = existing
       connect(to: existing)
       completion(nil, existing)
     } else {
@@ -448,7 +447,6 @@ public final class CastClient: NSObject {
           return
         }
         
-        self?.connectedApp = app
         self?.connect(to: app)
         completion(nil, app)
       }
@@ -655,6 +653,7 @@ public final class CastClient: NSObject {
       
       try write(data: message)
       startBeating(id: app.transportId)
+      connectedApp = app
     } catch {
       NSLog("Error connecting to app: \(error)")
     }
@@ -669,6 +668,7 @@ public final class CastClient: NSObject {
       
       try write(data: message)
       stopBeating(id: app.transportId)
+      connectedApp = nil
     } catch {
       NSLog("Error connecting to app: \(error)")
     }
