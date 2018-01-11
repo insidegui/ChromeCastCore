@@ -413,11 +413,16 @@ public final class CastClient: NSObject {
     }
   }
   
-  public func join(app: CastApp, completion: @escaping (CastError?, CastApp?) -> Void) {
-    if let currentApp = currentStatus?.apps.first(where: { $0.id == app.id }) {
-      connectedApp = currentApp
-      connect(to: currentApp)
-      completion(nil, currentApp)
+  public func join(app: CastApp? = nil, completion: @escaping (CastError?, CastApp?) -> Void) {
+    guard let target = app ?? currentStatus?.apps.first else {
+      completion(CastError.session("No Apps Running"), nil)
+      return
+    }
+    
+    if let existing = currentStatus?.apps.first(where: { $0.id == target.id }) {
+      connectedApp = existing
+      connect(to: existing)
+      completion(nil, existing)
     } else {
       let payload: [String: Any] = [
         CastJSONPayloadKeys.type: CastMessageType.statusRequest.rawValue
@@ -448,15 +453,6 @@ public final class CastClient: NSObject {
         completion(nil, app)
       }
     }
-  }
-  
-  public func joinCurrentApp(completion: @escaping (CastError?, CastApp?) -> Void) {
-    guard let currentApp = currentStatus?.apps.first else {
-      completion(CastError.connection("No App Running"), nil)
-      return
-    }
-    
-    join(app: currentApp, completion: completion)
   }
   
   public func launch(appId: CastAppIdentifier, completion: @escaping (CastError?, CastApp?) -> Void) {
@@ -504,6 +500,12 @@ public final class CastClient: NSObject {
         completionHandler(nil, app)
       }
     }
+  }
+  
+  public func leave(app: CastApp? = nil) {
+    guard let target = app ?? currentStatus?.apps.first else { return }
+    
+    disconnect(app: target)
   }
   
   @nonobjc public func stop(app: CastApp) {
@@ -604,6 +606,7 @@ public final class CastClient: NSObject {
     try write(data: message)
   }
   
+  
   // MARK: - Message handling
   
   private func handleJSONMessage(with json: Data?, originalMessage: CastMessage) {
@@ -652,6 +655,20 @@ public final class CastClient: NSObject {
       
       try write(data: message)
       startBeating(id: app.transportId)
+    } catch {
+      NSLog("Error connecting to app: \(error)")
+    }
+  }
+  
+  private func disconnect(app: CastApp) {
+    //        NSLog("Disconnecting \(app.displayName)")
+    
+    do {
+      let payload = [CastJSONPayloadKeys.type: CastMessageType.close.rawValue]
+      let message = try jsonMessage(with: payload, namespace: .connection, destinationId: app.transportId)
+      
+      try write(data: message)
+      stopBeating(id: app.transportId)
     } catch {
       NSLog("Error connecting to app: \(error)")
     }

@@ -103,26 +103,7 @@ extension StatusItemController: CastClientDelegate {
   }
   
   func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
-    guard let title = status.metadata?["title"].string,
-      let albumName = status.metadata?["albumName"].string else { return }
-    
-    let source = """
-    tell application "iTunes"
-    play (every track of playlist "Library" whose name is "\(title)" and album is "\(albumName)")
-    set player position to \(status.currentTime)
-    end tell
-    """
-    
-    var error: NSDictionary?
-    
-    if let script = NSAppleScript(source: source) {
-      let output = script.executeAndReturnError(&error)
-      
-      if let error = error {
-        print("error: \(error)")
-      } else {
-        client.stopCurrentApp()
-      }
-    }
+    print(status.metadata?["title"].string)
+    client.leave()
   }
 }
