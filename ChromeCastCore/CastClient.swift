@@ -224,8 +224,8 @@ public final class CastClient: NSObject {
     }
   }
   
-  private lazy var reader: CASTV2PlatformReader = {
-    return CASTV2PlatformReader(stream: self.inputStream)
+  private lazy var reader: CastV2PlatformReader = {
+    return CastV2PlatformReader(stream: self.inputStream)
   }()
   
   fileprivate func readStream() {
@@ -647,8 +647,8 @@ public final class CastClient: NSObject {
       if !self.isConnected {
         self.isConnected = true
       }
-    //            NSLog("PONG from \(originalMessage.sourceId)")
-
+      //            NSLog("PONG from \(originalMessage.sourceId)")
+      
       if originalMessage.namespace == CastNamespace.heartbeat.rawValue {
         disconnectTimer = Timer(timeInterval: disconnectTimeout,
                                 target: self,
@@ -656,7 +656,7 @@ public final class CastClient: NSObject {
                                 userInfo: nil,
                                 repeats: false)
       }
-
+      
     case .close:
       if originalMessage.sourceID == CastConstants.receiverName {
         // device disconnected
@@ -733,7 +733,6 @@ public final class CastClient: NSObject {
       }
     }
   }
-  
 }
 
 extension CastClient: StreamDelegate {

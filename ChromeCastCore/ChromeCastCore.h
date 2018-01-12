@@ -10,5 +10,3 @@
 
 FOUNDATION_EXPORT double ChromeCastCoreVersionNumber;
 FOUNDATION_EXPORT const unsigned char ChromeCastCoreVersionString[];
-
-#import <ChromeCastCore/CASTV2PlatformReader.h>
