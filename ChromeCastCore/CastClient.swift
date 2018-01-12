@@ -164,7 +164,7 @@ public final class CastClient: NSObject {
   }
   
   public func disconnect() {
-    heartbeatTimers.forEach({ self.stopBeating(id: $0.key) })
+    stopAllBeats()
     
     socketQueue.async {
       if self.inputStream != nil {
@@ -750,6 +750,10 @@ extension CastClient: StreamDelegate {
       }
     case Stream.Event.errorOccurred:
       NSLog("Stream error occurred: \(aStream.streamError.debugDescription)")
+      
+      DispatchQueue.main.async {
+        self.delegate?.castClient?(self, connectionTo: self.device, didFailWith: aStream.streamError as! NSError)
+      }
     case Stream.Event.hasBytesAvailable:
       socketQueue.async {
         self.readStream()

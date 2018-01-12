@@ -11,11 +11,17 @@ import Foundation
 extension CastDevice {
   
   convenience init(service: NetService, info: [String: String]) {
-    let name = info["fn"] ?? service.name
-    let addr = service.addresses?.first ?? Data()
-    
-    self.init(id: info["id"]!, name: name, hostName: service.hostName!, address: addr, port: service.port)
+    self.init(id: info["id"] ?? "",
+              name: info["fn"] ?? service.name,
+              modelName: info["md"] ?? "Google Cast",
+              hostName: service.hostName!,
+              address: service.addresses?.first ?? Data(),
+              port: service.port,
+              capabilitiesMask: info["ca"].flatMap({ Int($0) }) ?? 0 ,
+              status: info["rs"] ?? "",
+              iconPath: info["ic"] ?? "")
   }
+  
 }
 
 public final class CastDeviceScanner: NSObject {
@@ -66,8 +72,8 @@ public final class CastDeviceScanner: NSObject {
   }
   
   public func reset() {
+    stopScanning()
     devices.removeAll()
-    browser = configureBrowser()
   }
   
   deinit {

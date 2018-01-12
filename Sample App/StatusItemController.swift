@@ -74,7 +74,7 @@ class StatusItemController: NSObject {
   }
   
   @objc func handleRefresh() {
-    print("refresh")
+    scanner.reset()
   }
   
   override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
@@ -84,7 +84,6 @@ class StatusItemController: NSObject {
 
 extension StatusItemController: NSMenuDelegate {
   func menuWillOpen(_ menu: NSMenu) {
-    scanner.reset()
     scanner.startScanning()
   }
   
@@ -95,6 +94,7 @@ extension StatusItemController: NSMenuDelegate {
 
 extension StatusItemController: CastClientDelegate {
   func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
+    print(status.apps)
     guard status.apps.count > 0, client.connectedApp == nil else { return }
     
     client.join() { (err, app) in
@@ -105,6 +105,11 @@ extension StatusItemController: CastClientDelegate {
   }
   
   func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
+    print(status)
 //    client.leave()
+  }
+  
+  func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: NSError) {
+    print(error)
   }
 }
