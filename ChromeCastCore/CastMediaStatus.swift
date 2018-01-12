@@ -40,6 +40,8 @@ extension CastMediaStatus {
   convenience init(json: JSON) {
     self.init()
     
+    print(json)
+    
     guard let status = json.array?.first else { return }
     
     if let sessionId = status["mediaSessionId"].int {

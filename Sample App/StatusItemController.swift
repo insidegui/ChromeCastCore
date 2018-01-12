@@ -11,7 +11,6 @@ import ChromeCastCore
 
 class StatusItemController: NSObject {
   let statusItem = NSStatusBar.system.statusItem(withLength: 36)
-  lazy var statusItemView = StatusItemView(statusItem: self.statusItem, controller: self)
   
   let scanner = CastDeviceScanner()
   var clients = [String: CastClient]()
@@ -85,7 +84,12 @@ class StatusItemController: NSObject {
 
 extension StatusItemController: NSMenuDelegate {
   func menuWillOpen(_ menu: NSMenu) {
+    scanner.reset()
     scanner.startScanning()
+  }
+  
+  func menuDidClose(_ menu: NSMenu) {
+    scanner.stopScanning()
   }
 }
 
@@ -101,6 +105,6 @@ extension StatusItemController: CastClientDelegate {
   }
   
   func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
-    client.leave()
+//    client.leave()
   }
 }

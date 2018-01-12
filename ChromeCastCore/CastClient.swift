@@ -264,10 +264,14 @@ public final class CastClient: NSObject {
   }
   
   private func stopBeating(id: String) {
-    guard heartbeatTimers[id] != nil else { return }
+    heartbeatTimers[id]?.invalidate()
     
-    heartbeatTimers[id]!.invalidate()
-    heartbeatTimers[id] = nil
+    heartbeatTimers.removeValue(forKey: id)
+  }
+  
+  private func stopAllBeats() {
+    heartbeatTimers.values.forEach { $0.invalidate() }
+    heartbeatTimers.removeAll()
   }
   
   @objc private func sendPing(_ sender: Timer?) {
@@ -609,12 +613,25 @@ public final class CastClient: NSObject {
   
   // MARK: - Message handling
   
+  private var disconnectTimer: Timer? {
+    willSet {
+      disconnectTimer?.invalidate()
+    }
+    didSet {
+      guard let timer = disconnectTimer else { return }
+      
+      RunLoop.main.add(timer, forMode: .commonModes)
+    }
+  }
+  
+  private let disconnectTimeout: TimeInterval = 10
+  
   private func handleJSONMessage(with json: Data?, originalMessage: CastMessage) {
     guard let data = json else { return }
     guard data.count > 0 else { return }
     
     let json = try! JSON(data: data)
-    
+
     if let requestId = json[CastJSONPayloadKeys.requestId].int {
       //            NSLog("Received response for previously sent request \(requestId), calling handler")
       callResponseHandler(for: requestId, with: nil, response: json)
@@ -631,12 +648,33 @@ public final class CastClient: NSObject {
         self.isConnected = true
       }
     //            NSLog("PONG from \(originalMessage.sourceId)")
+
+      if originalMessage.namespace == CastNamespace.heartbeat.rawValue {
+        disconnectTimer = Timer(timeInterval: disconnectTimeout,
+                                target: self,
+                                selector: #selector(handleTimeout),
+                                userInfo: nil,
+                                repeats: false)
+      }
+
     case .close:
       if originalMessage.sourceID == CastConstants.receiverName {
         // device disconnected
         if self.isConnected {
           self.isConnected = false
         }
+        
+        currentStatus = nil
+        currentMediaStatus = nil
+        connectedApp = nil
+      } else if let connectedApp = connectedApp, originalMessage.sourceID == connectedApp.transportId {
+        currentStatus = nil
+        currentMediaStatus = nil
+        self.connectedApp = nil
+      }
+      
+      DispatchQueue.main.async {
+        self.stopBeating(id: originalMessage.sourceID)
       }
     case .status:
       self.currentStatus = CastStatus(json: json)
@@ -644,6 +682,17 @@ public final class CastClient: NSObject {
       self.currentMediaStatus = CastMediaStatus(json: json["status"])
     default: break
     }
+  }
+  
+  @objc private func handleTimeout() {
+    if self.isConnected {
+      self.isConnected = false
+    }
+    
+    stopAllBeats()
+    currentStatus = nil
+    currentMediaStatus = nil
+    connectedApp = nil
   }
   
   private func connect(to app: CastApp) {

@@ -6,7 +6,6 @@
 //  Copyright © 2018 Guilherme Rambo. All rights reserved.
 //
 
-import Cocoa
 import SwiftyJSON
 
 public class AppAvailability: NSObject {

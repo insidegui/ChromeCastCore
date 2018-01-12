@@ -1,9 +1,9 @@
 {
   "commitish" : "4.0.0",
-  "Mac" : [
+  "watchOS" : [
     {
       "name" : "SwiftyJSON",
-      "hash" : "b520dd2469a6a41834d3e250b41d87a1d46dd8057a67b5822752d64473feadce"
+      "hash" : "1c5bd531a1fba2b2fd32d662d81c3dd2e3d315686c9901928815f0e3a91d6779"
     }
   ]
 }

@@ -9,129 +9,192 @@
 import Foundation
 
 extension CastDevice {
+  
+  convenience init(service: NetService, info: [String: String]) {
+    let name = info["fn"] ?? service.name
+    let addr = service.addresses?.first ?? Data()
     
-    convenience init(service: NetService, info: [String: String]) {
-        let name = info["fn"] ?? service.name
-        let addr = service.addresses?.first ?? Data()
-        
-        self.init(id: info["id"]!, name: name, hostName: service.hostName!, address: addr, port: service.port)
-    }
-    
+    self.init(id: info["id"]!, name: name, hostName: service.hostName!, address: addr, port: service.port)
+  }
 }
 
 public final class CastDeviceScanner: NSObject {
-    public static let deviceListDidChange = Notification.Name(rawValue: "DeviceScannerDeviceListDidChangeNotification")
-    
-    private lazy var browser: NetServiceBrowser = {
-        let b = NetServiceBrowser()
-        
-        b.includesPeerToPeer = true
-        b.delegate = self
-        
-        return b
-    }()
-    
-    public var isScanning = false
-    
-    fileprivate var services = [NetService]()
-    
-    public fileprivate(set) var devices = [CastDevice]() {
-        didSet {
-            NotificationCenter.default.post(name: CastDeviceScanner.deviceListDidChange, object: self)
-        }
+  weak var delegate: CastDeviceScannerDelegate?
+  
+  public static let deviceListDidChange = Notification.Name(rawValue: "DeviceScannerDeviceListDidChangeNotification")
+  
+  private lazy var browser: NetServiceBrowser = self.configureBrowser()
+  
+  public var isScanning = false
+  
+  fileprivate var services = [NetService]()
+  
+  public fileprivate(set) var devices = [CastDevice]() {
+    didSet {
+      NotificationCenter.default.post(name: CastDeviceScanner.deviceListDidChange, object: self)
     }
+  }
+  
+  private func configureBrowser() -> NetServiceBrowser {
+    let b = NetServiceBrowser()
     
-    public func startScanning() {
-        guard !isScanning else { return }
-
-        browser.stop()
-        browser.searchForServices(ofType: "_googlecast._tcp", inDomain: "local")
-        
-        #if DEBUG
-            NSLog("Started scanning")
-        #endif
-    }
+    b.includesPeerToPeer = true
+    b.delegate = self
     
-    public func stopScanning() {
-        guard isScanning else { return }
-        
-        browser.stop()
-        
-        #if DEBUG
-            NSLog("Stopped scanning")
-        #endif
-    }
+    return b
+  }
+  
+  public func startScanning() {
+    guard !isScanning else { return }
     
-    deinit {
-        stopScanning()
-    }
+    browser.stop()
+    browser.searchForServices(ofType: "_googlecast._tcp", inDomain: "local")
     
+    #if DEBUG
+      NSLog("Started scanning")
+    #endif
+  }
+  
+  public func stopScanning() {
+    guard isScanning else { return }
+    
+    browser.stop()
+    
+    #if DEBUG
+      NSLog("Stopped scanning")
+    #endif
+  }
+  
+  public func reset() {
+    devices.removeAll()
+    browser = configureBrowser()
+  }
+  
+  deinit {
+    stopScanning()
+  }
+  
 }
 
 extension CastDeviceScanner: NetServiceBrowserDelegate {
+  
+  public func netServiceBrowserWillSearch(_ browser: NetServiceBrowser) {
+    isScanning = true
+  }
+  
+  public func netServiceBrowserDidStopSearch(_ browser: NetServiceBrowser) {
+    isScanning = false
+  }
+  
+  public func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
+    removeService(service)
+
+    service.delegate = self
+    service.resolve(withTimeout: 30.0)
+    services.append(service)
     
-    public func netServiceBrowserWillSearch(_ browser: NetServiceBrowser) {
-        isScanning = true
-    }
+    #if DEBUG
+      NSLog("Did find service: \(service) more: \(moreComing)")
+    #endif
+  }
+  
+  public func netServiceBrowser(_ browser: NetServiceBrowser, didRemove service: NetService, moreComing: Bool) {
+    guard let service = removeService(service) else { return }
     
-    public func netServiceBrowserDidStopSearch(_ browser: NetServiceBrowser) {
-        isScanning = false
-    }
+    #if DEBUG
+      NSLog("Did remove service: \(service)")
+    #endif
     
-    public func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
-        service.delegate = self
-        service.resolve(withTimeout: 30.0)
-        services.append(service)
-        
+    guard let deviceId = service.id,
+      let index = devices.index(where: { $0.id == deviceId }) else {
         #if DEBUG
-            NSLog("Did find service: \(service) more: \(moreComing)")
+          NSLog("No device")
         #endif
+        
+        return
     }
     
+    #if DEBUG
+      NSLog("Removing device: \(devices[index])")
+    #endif
+    let device = devices.remove(at: index)
+    delegate?.deviceDidGoOffline(device)
+  }
+  
+  @discardableResult func removeService(_ service: NetService) -> NetService? {
+    if let index = services.index(of: service) {
+      return services.remove(at: index)
+    }
+    
+    return nil
+  }
+  
+  func addDevice(_ device: CastDevice) {
+    if let index = devices.index(where: { $0.id == device.id }) {
+      devices.remove(at: index)
+      devices.insert(device, at: index)
+      
+      delegate?.deviceDidChange(device)
+    } else {
+      devices.append(device)
+      delegate?.deviceDidComeOnline(device)
+    }
+  }
 }
 
 extension CastDeviceScanner: NetServiceDelegate {
-    
-    public func netServiceDidResolveAddress(_ sender: NetService) {
-        guard let data = sender.txtRecordData() else {
-            #if DEBUG
-                NSLog("No TXT record for \(sender), skipping")
-            #endif
-            return
-        }
-        
-        var infoDict = [String: String]()
-        NetService.dictionary(fromTXTRecord: data).forEach({ infoDict[$0.key] = String(data: $0.value, encoding: .utf8)! })
-        
-        #if DEBUG
-            NSLog("Did resolve service: \(sender)")
-            NSLog("\(infoDict)")
-        #endif
-        
-        guard infoDict["id"] != nil else {
-            #if DEBUG
-                NSLog("No id for device \(sender), skipping")
-            #endif
-            return
-        }
-        
-        let device = CastDevice(service: sender, info: infoDict)
-        if let index = devices.index(where: { $0.id == device.id }) {
-            devices.remove(at: index)
-            devices.insert(device, at: index)
-        } else {
-            devices.append(device)
-        }
+  
+  public func netServiceDidResolveAddress(_ sender: NetService) {
+    guard let infoDict = sender.infoDict else {
+      #if DEBUG
+        NSLog("No TXT record for \(sender), skipping")
+      #endif
+      return
     }
     
-    public func netService(_ sender: NetService, didNotResolve errorDict: [String : NSNumber]) {
-        if let index = services.index(of: sender) {
-            services.remove(at: index)
-        }
-        
-        #if DEBUG
-            NSLog("!! Failed to resolve service: \(sender) - \(errorDict) !!")
-        #endif
+    #if DEBUG
+      NSLog("Did resolve service: \(sender)")
+      NSLog("\(infoDict)")
+    #endif
+    
+    guard infoDict["id"] != nil else {
+      #if DEBUG
+        NSLog("No id for device \(sender), skipping")
+      #endif
+      return
     }
     
+    addDevice(CastDevice(service: sender, info: infoDict))
+  }
+  
+  public func netService(_ sender: NetService, didNotResolve errorDict: [String : NSNumber]) {
+    removeService(sender)
+    
+    #if DEBUG
+      NSLog("!! Failed to resolve service: \(sender) - \(errorDict) !!")
+    #endif
+  }
+}
+
+extension NetService {
+  var infoDict: [String: String]? {
+    guard let data = txtRecordData() else {
+      return nil
+    }
+    
+    var dict = [String: String]()
+    NetService.dictionary(fromTXTRecord: data).forEach({ dict[$0.key] = String(data: $0.value, encoding: .utf8)! })
+    
+    return dict
+  }
+  
+  var id: String? {
+    return infoDict?["id"]
+  }
+}
+
+public protocol CastDeviceScannerDelegate: class {
+  func deviceDidComeOnline(_ device: CastDevice)
+  func deviceDidChange(_ device: CastDevice)
+  func deviceDidGoOffline(_ device: CastDevice)
 }
