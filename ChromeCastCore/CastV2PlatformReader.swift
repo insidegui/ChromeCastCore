@@ -30,14 +30,14 @@ class CastV2PlatformReader {
     var totalBytesRead = 0
     let bufferSize = 32
     
-    while self.stream.hasBytesAvailable {
+    while stream.hasBytesAvailable {
       let bytes = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
       
-      let bytesRead = self.stream.read(bytes, maxLength: bufferSize)
+      let bytesRead = stream.read(bytes, maxLength: bufferSize)
       
       if bytesRead < 0 { continue }
       
-      self.buffer.append(Data(bytes: bytes, count: bytesRead))
+      buffer.append(Data(bytes: bytes, count: bytesRead))
       
       bytes.deallocate(capacity: bufferSize)
       
@@ -50,40 +50,38 @@ class CastV2PlatformReader {
     defer { objc_sync_exit(self) }
     
     let headerSize = MemoryLayout<UInt32>.size
-    guard self.buffer.count - self.readPosition >= headerSize else { return nil }
-    let header = self.buffer.withUnsafeBytes({ (pointer: UnsafePointer<Int8>) -> UInt32 in
+    guard buffer.count - readPosition >= headerSize else { return nil }
+    let header = buffer.withUnsafeBytes({ (pointer: UnsafePointer<Int8>) -> UInt32 in
       return pointer.advanced(by: self.readPosition).withMemoryRebound(to: UInt32.self, capacity: 1, { $0.pointee })
     })
     
     let payloadSize = Int(CFSwapInt32BigToHost(header))
     
     readPosition += headerSize
-    
-    let payloadEnd = self.readPosition + payloadSize
 
-    guard self.buffer.count >= payloadEnd, self.buffer.count - self.readPosition >= payloadSize, payloadSize >= 0 else {
+    guard buffer.count >= readPosition + payloadSize, buffer.count - readPosition >= payloadSize, payloadSize >= 0 else {
       //Message hasn't arrived
-      self.readPosition -= headerSize
+      readPosition -= headerSize
       return nil
     }
     
-    let data = self.buffer.withUnsafeBytes({ (pointer: UnsafePointer<Int8>) -> Data in
+    let payload = buffer.withUnsafeBytes({ (pointer: UnsafePointer<Int8>) -> Data in
       return Data(bytes: pointer.advanced(by: self.readPosition), count: payloadSize)
     })
     readPosition += payloadSize
     
-    self.resetBufferIfNeeded()
+    resetBufferIfNeeded()
     
-    return data
+    return payload
   }
   
   private func resetBufferIfNeeded() {
-    guard self.buffer.count >= maxBufferLength else { return }
+    guard buffer.count >= maxBufferLength else { return }
     
-    if readPosition == self.buffer.count {
-      self.buffer = Data(capacity: maxBufferLength)
+    if readPosition == buffer.count {
+      buffer = Data(capacity: maxBufferLength)
     } else {
-      self.buffer = self.buffer.advanced(by: self.readPosition)
+      buffer = buffer.advanced(by: readPosition)
     }
   }
 }
