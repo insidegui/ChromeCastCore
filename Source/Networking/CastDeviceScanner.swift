@@ -9,13 +9,28 @@
 import Foundation
 
 extension CastDevice {
-  
   convenience init(service: NetService, info: [String: String]) {
+    var ipAddress: String?
+    
+    if let address = service.addresses?.first {
+      ipAddress = address.withUnsafeBytes { (pointer: UnsafePointer<sockaddr>) -> String? in
+        let capacity = Int(NI_MAXHOST)
+        let hostName = UnsafeMutablePointer<CChar>.allocate(capacity: capacity)
+        defer { hostName.deallocate(capacity: capacity) }
+        
+        if getnameinfo(pointer, socklen_t(address.count), hostName, socklen_t(capacity), nil, 0, NI_NUMERICHOST) == 0 {
+          return String.init(cString: hostName)
+        }
+        
+        return nil
+      }
+    }
+    
     self.init(id: info["id"] ?? "",
               name: info["fn"] ?? service.name,
               modelName: info["md"] ?? "Google Cast",
               hostName: service.hostName!,
-              address: service.addresses?.first ?? Data(),
+              ipAddress: ipAddress ?? "",
               port: service.port,
               capabilitiesMask: info["ca"].flatMap(Int.init) ?? 0 ,
               status: info["rs"] ?? "",
@@ -137,6 +152,10 @@ extension CastDeviceScanner: NetServiceBrowserDelegate {
   
   func addDevice(_ device: CastDevice) {
     if let index = devices.index(where: { $0.id == device.id }) {
+      let existing = devices[index]
+
+      guard existing.name != device.name ||  existing.hostName != device.hostName else { return }
+      
       devices.remove(at: index)
       devices.insert(device, at: index)
       
