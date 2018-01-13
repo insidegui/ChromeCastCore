@@ -31,15 +31,13 @@ class CastV2PlatformReader {
     let bufferSize = 32
     
     while stream.hasBytesAvailable {
-      let bytes = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+      var bytes = [UInt8](repeating: 0, count: bufferSize)
       
-      let bytesRead = stream.read(bytes, maxLength: bufferSize)
+      let bytesRead = stream.read(&bytes, maxLength: bufferSize)
       
       if bytesRead < 0 { continue }
       
-      buffer.append(Data(bytes: bytes, count: bytesRead))
-      
-      bytes.deallocate(capacity: bufferSize)
+      buffer.append(Data(bytes: &bytes, count: bytesRead))
       
       totalBytesRead += bytesRead
     }

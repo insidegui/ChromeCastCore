@@ -14,15 +14,9 @@ extension CastDevice {
     
     if let address = service.addresses?.first {
       ipAddress = address.withUnsafeBytes { (pointer: UnsafePointer<sockaddr>) -> String? in
-        let capacity = Int(NI_MAXHOST)
-        let hostName = UnsafeMutablePointer<CChar>.allocate(capacity: capacity)
-        defer { hostName.deallocate(capacity: capacity) }
+        var hostName = [CChar](repeating: 0, count: Int(NI_MAXHOST))
         
-        if getnameinfo(pointer, socklen_t(address.count), hostName, socklen_t(capacity), nil, 0, NI_NUMERICHOST) == 0 {
-          return String.init(cString: hostName)
-        }
-        
-        return nil
+        return getnameinfo(pointer, socklen_t(address.count), &hostName, socklen_t(NI_MAXHOST), nil, 0, NI_NUMERICHOST) == 0 ? String.init(cString: hostName) : nil
       }
     }
     
