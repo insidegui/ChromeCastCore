@@ -60,18 +60,10 @@ extension CastMediaStatus {
       self.currentTime = currentTime
     }
     
-    self.metadata = status["media"]["metadata"]
+    metadata = status["media"]["metadata"]
     
     if let contentID = status["media"]["contentId"].string, let data = contentID.data(using: .utf8) {
-      do {
-        let contentIdJson = try JSON(data: data)
-
-        self.contentID = contentIdJson["contentId"].string ?? contentID
-      } catch let error {
-        print(error)
-        
-        self.contentID = contentID
-      }
+      self.contentID = (try? JSON(data: data))?["contentId"].string ?? contentID
     }
   }
 }
