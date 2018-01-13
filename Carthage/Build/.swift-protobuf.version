@@ -1,9 +1,9 @@
 {
   "commitish" : "1.0.2",
-  "watchOS" : [
+  "iOS" : [
     {
       "name" : "SwiftProtobuf",
-      "hash" : "be00f7274b3afbe4dad1e9f390ef5cd494255e761370879dc7beda3a82a64116"
+      "hash" : "4811958982e148564d9a05421b340ba5296458e96eabb03c1fe91f7901d2bbeb"
     }
   ]
 }
