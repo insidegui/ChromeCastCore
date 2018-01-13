@@ -226,7 +226,6 @@
                         <constraints>
                             <constraint firstItem="v2i-XG-vAA" firstAttribute="top" secondItem="6cl-Q8-MW8" secondAttribute="top" constant="46" id="3kt-2b-nEQ"/>
                             <constraint firstItem="vJ7-B4-LC1" firstAttribute="top" secondItem="6cl-Q8-MW8" secondAttribute="top" constant="41" id="DKJ-Tr-o4I"/>
-                            <constraint firstItem="6Gz-zX-Xmn" firstAttribute="top" secondItem="Bgo-CM-YiE" secondAttribute="bottom" constant="44.5" id="Gnh-4U-63G"/>
                             <constraint firstItem="BdQ-aY-dWJ" firstAttribute="leading" secondItem="6cl-Q8-MW8" secondAttribute="leading" constant="16" id="IeU-MQ-tbq"/>
                             <constraint firstItem="6Gz-zX-Xmn" firstAttribute="centerX" secondItem="6cl-Q8-MW8" secondAttribute="centerX" id="MT6-ng-4Ph"/>
                             <constraint firstItem="kkm-KV-fJb" firstAttribute="leading" secondItem="6cl-Q8-MW8" secondAttribute="trailing" multiplier="1/2" id="O88-l3-TB5"/>
@@ -237,6 +236,7 @@
                             <constraint firstItem="wpk-cx-TzM" firstAttribute="top" secondItem="6cl-Q8-MW8" secondAttribute="top" constant="17" id="eC3-2N-PQ3"/>
                             <constraint firstItem="v2i-XG-vAA" firstAttribute="leading" secondItem="6cl-Q8-MW8" secondAttribute="leading" constant="16" id="jOw-xw-XXJ"/>
                             <constraint firstItem="Bgo-CM-YiE" firstAttribute="top" secondItem="6cl-Q8-MW8" secondAttribute="top" constant="117" id="nqz-af-fw0"/>
+                            <constraint firstItem="6Gz-zX-Xmn" firstAttribute="top" secondItem="6cl-Q8-MW8" secondAttribute="top" constant="161.5" id="rWN-Ym-FAB"/>
                             <constraint firstItem="Bgo-CM-YiE" firstAttribute="leading" secondItem="BdQ-aY-dWJ" secondAttribute="leading" id="zc5-pd-vUL"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6cl-Q8-MW8"/>

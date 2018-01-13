@@ -29,7 +29,7 @@ public final class CastDeviceScanner: NSObject {
   
   public static let deviceListDidChange = Notification.Name(rawValue: "DeviceScannerDeviceListDidChangeNotification")
   
-  private lazy var browser: NetServiceBrowser = self.configureBrowser()
+  private lazy var browser: NetServiceBrowser = configureBrowser()
   
   public var isScanning = false
   

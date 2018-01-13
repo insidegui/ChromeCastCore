@@ -302,10 +302,7 @@ public final class CastClient: NSObject {
     return String(data: data, encoding: .utf8)!
   }
   
-  private lazy var senderName: String = {
-    let rand = arc4random_uniform(90)
-    return "sender-\(rand)"
-  }()
+  private let senderName: String = "sender-\(UUID().uuidString)"
   
   private func jsonMessage(with payload: [String: Any], namespace: CastNamespace, destinationId: String = CastConstants.receiverName) throws -> Data {
     var effectivePayload = payload
@@ -333,7 +330,6 @@ public final class CastClient: NSObject {
       // even though we are not using the binary payload for anything, the builder will crash if we don't specify one
       $0.payloadBinary = Data()
     }
-    
     
     return try message.serializedData()
   }
