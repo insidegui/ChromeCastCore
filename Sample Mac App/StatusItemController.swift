@@ -106,7 +106,6 @@ extension StatusItemController: CastClientDelegate {
   
   func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
     print(status)
-//    client.leave()
   }
   
   func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: NSError) {

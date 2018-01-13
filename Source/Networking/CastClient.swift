@@ -170,6 +170,7 @@ public final class CastClient: NSObject {
   }
   
   public func disconnect() {
+    try? sendCloseMessage()
     stopAllBeats()
     
     socketQueue.async {
@@ -223,6 +224,20 @@ public final class CastClient: NSObject {
           NSLog("Unable to send initial status request: \(error)")
         }
       }
+    } catch {
+      NSLog("Error sending connect message: \(error)")
+    }
+  }
+  
+  public func sendCloseMessage() throws {
+    guard outputStream != nil else { return }
+    
+    do {
+      let message = try closeMessage()
+      
+      try write(data: message)
+      
+      //            NSLog("CLOSE")
     } catch {
       NSLog("Error sending connect message: \(error)")
     }
@@ -344,6 +359,10 @@ public final class CastClient: NSObject {
   
   private func connectMessage() throws -> Data {
     return try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue], namespace: .connection)
+  }
+  
+  private func closeMessage() throws -> Data {
+    return try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.close.rawValue], namespace: .connection)
   }
   
   private func heartbeatMessage(to destinationId: String) throws -> Data {
