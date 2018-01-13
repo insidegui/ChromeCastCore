@@ -1,9 +1,15 @@
 {
   "commitish" : "4.0.0",
+  "Mac" : [
+    {
+      "name" : "SwiftyJSON",
+      "hash" : "b520dd2469a6a41834d3e250b41d87a1d46dd8057a67b5822752d64473feadce"
+    }
+  ],
   "iOS" : [
     {
       "name" : "SwiftyJSON",
-      "hash" : "bcab7e7d09b0d0bbe1a21de1b891f5c8efee1b5adfa568a46a17eb85f1b5f343"
+      "hash" : "ebc70a9cdb7131164f30bfd3b53ba72c6e4dbc29633e8c965e08872d44be3205"
     }
   ]
 }

@@ -1,9 +1,15 @@
 {
   "commitish" : "1.0.2",
+  "Mac" : [
+    {
+      "name" : "SwiftProtobuf",
+      "hash" : "80486c10b78fb649434ec9be416244fb27359b27337e137a5fdabced0e71836d"
+    }
+  ],
   "iOS" : [
     {
       "name" : "SwiftProtobuf",
-      "hash" : "4811958982e148564d9a05421b340ba5296458e96eabb03c1fe91f7901d2bbeb"
+      "hash" : "ce522088e2b478b446511250d2055dd559a893235c4f325fe5d9c741ac66ad62"
     }
   ]
 }

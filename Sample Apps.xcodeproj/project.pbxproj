@@ -15,7 +15,6 @@
 		0298FB87200993F200A0B016 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0298FB82200993F200A0B016 /* MainMenu.xib */; };
 		0298FB88200993F200A0B016 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0298FB84200993F200A0B016 /* Assets.xcassets */; };
 		0298FB89200993F200A0B016 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0298FB85200993F200A0B016 /* AppDelegate.swift */; };
-		0298FB8A200993F300A0B016 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0298FB86200993F200A0B016 /* Info.plist */; };
 		0298FB8D200993F800A0B016 /* StatusItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0298FB8C200993F800A0B016 /* StatusItemController.swift */; };
 		0298FB912009951A00A0B016 /* ChromeCastCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0298FB922009951A00A0B016 /* ChromeCastCore.framework */; };
 		0298FB932009952000A0B016 /* ChromeCastCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0298FB942009952000A0B016 /* ChromeCastCore.framework */; };
@@ -224,7 +223,6 @@
 			files = (
 				0298FB88200993F200A0B016 /* Assets.xcassets in Resources */,
 				0298FB87200993F200A0B016 /* MainMenu.xib in Resources */,
-				0298FB8A200993F300A0B016 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

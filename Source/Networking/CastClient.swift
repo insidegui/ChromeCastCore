@@ -10,6 +10,19 @@ import Foundation
 import SwiftProtobuf
 import SwiftyJSON
 
+public enum CastPayload {
+  case json([String: Any])
+  case data(Data)
+  
+  init(_ json: [String: Any]) {
+    self = .json(json)
+  }
+  
+  init(_ data: Data) {
+    self = .data(data)
+  }
+}
+
 typealias CastMessage = Extensions_Api_CastChannel_CastMessage
 
 public enum CastError: Error {
@@ -22,19 +35,24 @@ public enum CastError: Error {
 }
 
 final class CastRequest: NSObject {
-  
   var id: Int
-  var namespace: CastNamespace
+  var namespace: String
   var destinationId: String
-  var payload: [String: Any]
+  var payload: CastPayload
   
-  init(id: Int, namespace: CastNamespace, destinationId: String, payload: [String: Any]) {
+  init(id: Int, namespace: String, destinationId: String, payload: [String: Any]) {
     self.id = id
     self.namespace = namespace
     self.destinationId = destinationId
-    self.payload = payload
+    self.payload = CastPayload(payload)
   }
   
+  init(id: Int, namespace: String, destinationId: String, payload: Data) {
+    self.id = id
+    self.namespace = namespace
+    self.destinationId = destinationId
+    self.payload = CastPayload(payload)
+  }
 }
 
 @objc public protocol CastClientDelegate: class {
@@ -170,8 +188,10 @@ public final class CastClient: NSObject {
   }
   
   public func disconnect() {
-    try? sendCloseMessage()
-    stopAllBeats()
+    if isConnected {
+      isConnected = false
+    }
+    stopBeating()
     
     socketQueue.async {
       if self.inputStream != nil {
@@ -206,23 +226,30 @@ public final class CastClient: NSObject {
     }
   }
   
+  public func sendAuthChallenge() throws {
+    guard outputStream != nil else { return }
+    
+    let message = Extensions_Api_CastChannel_DeviceAuthMessage.with({ (message) in
+      message.challenge = Extensions_Api_CastChannel_AuthChallenge()
+    })
+    
+    let request = CastRequest(id: nextRequestId(), namespace: .auth, destinationId: CastConstants.receiver, payload: try message.serializedData())
+    send(request: request)
+  }
+  
+  
   fileprivate func sendConnectMessage() throws {
     guard outputStream != nil else { return }
     
     do {
       let message = try connectMessage()
-      
+
       try write(data: message)
       
       //            NSLog("CONNECT")
       
       DispatchQueue.main.async {
-        self.startBeating(id: CastConstants.receiverName)
-        do {
-          try self.requestStatus()
-        } catch {
-          NSLog("Unable to send initial status request: \(error)")
-        }
+        self.startBeating()
       }
     } catch {
       NSLog("Error sending connect message: \(error)")
@@ -234,7 +261,7 @@ public final class CastClient: NSObject {
     
     do {
       let message = try closeMessage()
-      
+
       try write(data: message)
       
       //            NSLog("CLOSE")
@@ -252,11 +279,18 @@ public final class CastClient: NSObject {
       while let payload = reader?.nextMessage() {
         let message = try CastMessage(serializedData: payload)
         
-        if message.payloadType == .string {
+        switch message.payloadType {
+        case .string:
           if let messageData = message.payloadUtf8.data(using: .utf8) {
             handleJSONMessage(with: messageData, originalMessage: message)
           } else {
             NSLog("Unable to get UTF8 JSON data from message")
+          }
+        case .binary:
+          if let response = try? Extensions_Api_CastChannel_AuthResponse(serializedData: message.payloadBinary) {
+            print(response)
+          } else if let message = try? Extensions_Api_CastChannel_DeviceAuthMessage(serializedData: message.payloadBinary) {
+            print(message)
           }
         }
       }
@@ -267,45 +301,36 @@ public final class CastClient: NSObject {
   
   // MARK: - Heartbeat
   
-  private var heartbeatTimers = [String: Timer]()
+  private var heartbeatTimer: Timer? {
+    didSet {
+      oldValue?.invalidate()
+    }
+  }
   
-  private func startBeating(id: String) {
-    guard heartbeatTimers["id"] == nil else {
-      NSLog("Tried to start heartbeat to \(id), but another heartbeat is already in effect for this endpoint")
+  private func startBeating() {
+    guard heartbeatTimer == nil else {
+      NSLog("Tried to start heartbeat, but another heartbeat is already in effect")
       return
     }
     
-    sendPing(to: id)
+    sendPing()
     
-    heartbeatTimers[id] = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(sendPing(_:)), userInfo: ["id": id], repeats: true)
+    heartbeatTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(sendPing), userInfo: nil, repeats: true)
   }
   
-  private func stopBeating(id: String) {
-    heartbeatTimers[id]?.invalidate()
-    
-    heartbeatTimers.removeValue(forKey: id)
+  private func stopBeating() {
+    heartbeatTimer = nil
   }
   
-  private func stopAllBeats() {
-    heartbeatTimers.values.forEach { $0.invalidate() }
-    heartbeatTimers.removeAll()
-  }
-  
-  @objc private func sendPing(_ sender: Timer?) {
+  @objc private func sendPing() {
     guard outputStream != nil else { return }
-    guard let info = sender?.userInfo as? [String: String] else { return }
-    guard let id  = info["id"] else { return }
     
-    sendPing(to: id)
-  }
-  
-  private func sendPing(to destinationId: String) {
     do {
-      let message = try heartbeatMessage(to: destinationId)
+      let message = try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.ping.rawValue], namespace: .heartbeat, destinationId: CastConstants.transport)
       
       try write(data: message)
     } catch {
-      NSLog("Error sending heartbeat message to \(destinationId): \(error)")
+      NSLog("Error sending heartbeat ping")
     }
   }
   
@@ -319,19 +344,8 @@ public final class CastClient: NSObject {
   
   private let senderName: String = "sender-\(UUID().uuidString)"
   
-  private func jsonMessage(with payload: [String: Any], namespace: CastNamespace, destinationId: String = CastConstants.receiverName) throws -> Data {
-    var effectivePayload = payload
-    
-    // fill in the request id if needed
-    if payload[CastJSONPayloadKeys.requestId] == nil {
-      if let rawType = payload[CastJSONPayloadKeys.type] as? String {
-        if let type = CastMessageType(rawValue: rawType), type.needsRequestId {
-          effectivePayload[CastJSONPayloadKeys.requestId] = nextRequestId()
-        }
-      }
-    }
-    
-    let load = try encodePayload(with: effectivePayload)
+  private func jsonMessage(with payload: [String: Any], namespace: String, destinationId: String) throws -> Data {
+    let load = try encodePayload(with: payload)
     
     //        NSLog("\(effectivePayload)")
     
@@ -339,11 +353,22 @@ public final class CastClient: NSObject {
       $0.protocolVersion = .castv210
       $0.sourceID = senderName
       $0.destinationID = destinationId
-      $0.namespace = namespace.rawValue
+      $0.namespace = namespace
       $0.payloadType = .string
       $0.payloadUtf8 = load
-      // even though we are not using the binary payload for anything, the builder will crash if we don't specify one
-      $0.payloadBinary = Data()
+    }
+    
+    return try message.serializedData()
+  }
+  
+  private func jsonMessage(with payload: Data, namespace: String, destinationId: String) throws -> Data {
+    let message = CastMessage.with {
+      $0.protocolVersion = .castv210
+      $0.sourceID = senderName
+      $0.destinationID = destinationId
+      $0.namespace = namespace
+      $0.payloadType = .binary
+      $0.payloadBinary = payload
     }
     
     return try message.serializedData()
@@ -358,23 +383,11 @@ public final class CastClient: NSObject {
   }
   
   private func connectMessage() throws -> Data {
-    return try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue], namespace: .connection)
+    return try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue], namespace: .connection, destinationId: CastConstants.receiver)
   }
   
   private func closeMessage() throws -> Data {
-    return try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.close.rawValue], namespace: .connection)
-  }
-  
-  private func heartbeatMessage(to destinationId: String) throws -> Data {
-    return try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.ping.rawValue], namespace: .heartbeat, destinationId: destinationId)
-  }
-  
-  private func statusMessage() throws -> Data {
-    let payload: [String: Any] = [
-      CastJSONPayloadKeys.type: CastMessageType.statusRequest.rawValue
-    ]
-    
-    return try jsonMessage(with: payload, namespace: .receiver)
+    return try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.close.rawValue], namespace: .connection, destinationId: CastConstants.receiver)
   }
   
   // MARK - Request response
@@ -383,18 +396,29 @@ public final class CastClient: NSObject {
   
   private var responseHandlers = [Int: CastResponseHandler]()
   
-  private func send(request: CastRequest, response: CastResponseHandler?) {
-    responseHandlers[request.id] = response
+  private func send(request: CastRequest, response: CastResponseHandler? = nil) {
+    if let response = response {
+      responseHandlers[request.id] = response
+    }
     
     do {
-      //Don't want requestId for connect
-      if request.namespace != .connection {
-        request.payload[CastJSONPayloadKeys.requestId] = request.id
+      let messageData: Data
+      
+      switch request.payload {
+      case .json(var effectivePayload):
+        print("SENDING: \(effectivePayload)")
+        if effectivePayload[CastJSONPayloadKeys.requestId] == nil,
+          let type = (effectivePayload[CastJSONPayloadKeys.type] as? String).flatMap({ CastMessageType(rawValue: $0) }), type.needsRequestId {
+          effectivePayload[CastJSONPayloadKeys.requestId] = request.id
+        }
+        
+        messageData = try jsonMessage(with: effectivePayload, namespace: request.namespace, destinationId: request.destinationId)
+        
+      case .data(let data):
+        messageData = try jsonMessage(with: data, namespace: request.namespace, destinationId: request.destinationId)
       }
       
-      
-      let message = try jsonMessage(with: request.payload, namespace: request.namespace, destinationId: request.destinationId)
-      try write(data: message)
+      try write(data: messageData)
     } catch {
       callResponseHandler(for: request.id, with: .request(error.localizedDescription), response: nil)
     }
@@ -402,8 +426,10 @@ public final class CastClient: NSObject {
   
   private func callResponseHandler(for requestId: Int, with error: CastError?, response: JSON?) {
     DispatchQueue.main.async {
-      self.responseHandlers[requestId]?(error, response)
-      self.responseHandlers[requestId] = nil
+      if let handler = self.responseHandlers[requestId] {
+        handler(error, response)
+        self.responseHandlers[requestId] = nil
+      }
     }
   }
   
@@ -415,7 +441,7 @@ public final class CastClient: NSObject {
       CastJSONPayloadKeys.appId: apps.map { $0.id }
     ]
     
-    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiverName, payload: payload)
+    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiver, payload: payload)
     
     send(request: request) { (error, json) in
       guard error == nil, let json = json else {
@@ -446,24 +472,13 @@ public final class CastClient: NSObject {
       connect(to: existing)
       completion(nil, existing)
     } else {
-      let payload: [String: Any] = [
-        CastJSONPayloadKeys.type: CastMessageType.statusRequest.rawValue
-      ]
-      
-      let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiverName, payload: payload)
-      
-      send(request: request) { [weak self] (error, json) in
-        guard error == nil, let json = json else {
+      requestStatus() { [weak self] (error, status) in
+        guard let status = status else {
           if let error = error {
-            completion(CastError.launch(error.localizedDescription), nil)
-          } else {
-            completion(CastError.launch("Unkown error"), nil)
+            print(error.localizedDescription)
           }
-          
           return
         }
-        
-        let status = CastStatus(json: json)
         
         guard let app = status.apps.first else {
           completion(CastError.launch("Unable to get launched app instance"), nil)
@@ -482,7 +497,7 @@ public final class CastClient: NSObject {
       CastJSONPayloadKeys.appId: appId.rawValue
     ]
     
-    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiverName, payload: payload)
+    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiver, payload: payload)
     
     send(request: request) { [weak self] (error, json) in
       guard error == nil, let json = json else {
@@ -523,18 +538,12 @@ public final class CastClient: NSObject {
     }
   }
   
-  public func leave(app: CastApp? = nil) {
-    guard let target = app ?? currentStatus?.apps.first else { return }
-    
-    disconnect(app: target)
-  }
-  
   @nonobjc public func stop(app: CastApp) {
     let payload: [String: Any] = [
       CastJSONPayloadKeys.type: CastMessageType.stop.rawValue,
       CastJSONPayloadKeys.sessionId: app.sessionId
     ]
-    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiverName, payload: payload)
+    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiver, payload: payload)
     
     send(request: request, response: nil)
   }
@@ -548,6 +557,19 @@ public final class CastClient: NSObject {
     guard let app = currentStatus?.apps.first else { return }
     
     stop(app: app)
+  }
+  
+  public func leave(app: CastApp) {
+    do {
+      let payload = [CastJSONPayloadKeys.type: CastMessageType.close.rawValue]
+      let message = try jsonMessage(with: payload, namespace: .connection, destinationId: app.transportId)
+      
+      try write(data: message)
+
+      connectedApp = nil
+    } catch {
+      NSLog("Error connecting to app: \(error)")
+    }
   }
   
   public func load(media: CastMedia, with app: CastApp, completion: @escaping (CastError?, CastMediaStatus?) -> Void) {
@@ -619,12 +641,85 @@ public final class CastClient: NSObject {
     requestMediaStatus(for: app, mediaSessionId: mediaSessionId, completion: nil)
   }
   
-  public func requestStatus() throws {
+  public func requestStatus(completion: ((CastError?, CastStatus?) -> Void)? = nil) {
     guard outputStream != nil else { return }
     
-    let message = try statusMessage()
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.statusRequest.rawValue
+    ]
     
-    try write(data: message)
+    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiver, payload: payload)
+    
+    send(request: request) { (error, json) in
+      guard let completion = completion else {
+        if let error = error {
+          print(error.localizedDescription)
+        }
+        
+        return
+      }
+      
+      guard error == nil, let json = json else {
+        if let error = error {
+          completion(CastError.launch(error.localizedDescription), nil)
+        } else {
+          completion(CastError.launch("Unkown error"), nil)
+        }
+        
+        return
+      }
+      
+      completion(nil, CastStatus(json: json))
+    }
+  }
+  
+  public func requestDeviceInfo() {
+    guard outputStream != nil else { return }
+    
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.getDeviceInfo.rawValue,
+      ]
+    
+    let request = CastRequest(id: nextRequestId(), namespace: .discovery, destinationId: CastConstants.receiver, payload: payload)
+    
+    send(request: request) { (error, json) in
+      print(json)
+      //      guard let completion = completion else {
+      //        if let error = error {
+      //          print(error.localizedDescription)
+      //        }
+      //
+      //        return
+      //      }
+      
+      //      guard error == nil, let json = json else {
+      //        if let error = error {
+      //          completion(CastError.launch(error.localizedDescription), nil)
+      //        } else {
+      //          completion(CastError.launch("Unkown error"), nil)
+      //        }
+      //
+      //        return
+      //      }
+      //
+      //      completion(nil, CastStatus(json: json))
+    }
+  }
+  
+  public func requestDeviceConfig() {
+    guard outputStream != nil else { return }
+    
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.getDeviceConfig.rawValue,
+      "params": ["version", "name", "net.ip_address"],
+      "data": [:]
+    ]
+    
+    let request = CastRequest(id: nextRequestId(), namespace: .setup, destinationId: CastConstants.receiver, payload: payload)
+    
+    send(request: request) { (error, json) in
+      print(json)
+    }
   }
   
   
@@ -642,31 +737,55 @@ public final class CastClient: NSObject {
   }
   
   private let disconnectTimeout: TimeInterval = 10
+  private var greatestEncounteredRequestId = 0
   
   private func handleJSONMessage(with json: Data?, originalMessage: CastMessage) {
     guard let data = json else { return }
     guard data.count > 0 else { return }
     
     let json = try! JSON(data: data)
-
+    
     if let requestId = json[CastJSONPayloadKeys.requestId].int {
+      guard requestId > greatestEncounteredRequestId else {
+        return
+      }
+      
+      greatestEncounteredRequestId = requestId
+      
       //            NSLog("Received response for previously sent request \(requestId), calling handler")
       callResponseHandler(for: requestId, with: nil, response: json)
     }
     
     guard let rawType = json["type"].string else { return }
     
-    guard let type = CastMessageType(rawValue: rawType) else { return }
+    guard let type = CastMessageType(rawValue: rawType) else {
+      print("Unknown type: \(rawType)")
+      print(json)
+      return
+    }
     
     switch type {
+    case .ping:
+      print("PING from \(originalMessage.sourceID)")
+
+      do {
+        let message = try jsonMessage(with: [CastJSONPayloadKeys.type: CastMessageType.pong.rawValue],
+                                      namespace: originalMessage.namespace,
+                                      destinationId: originalMessage.sourceID)
+        
+        try write(data: message)
+      } catch {
+        NSLog("Error sending heartbeat message to \(originalMessage.sourceID): \(error)")
+      }
     case .pong:
       // connection confirmed with pong
-      if !self.isConnected {
-        self.isConnected = true
+      if !isConnected {
+        isConnected = true
       }
-      //            NSLog("PONG from \(originalMessage.sourceId)")
       
-      if originalMessage.namespace == CastNamespace.heartbeat.rawValue {
+//      print("PONG from \(originalMessage.sourceID)")
+      
+      if originalMessage.sourceID == CastConstants.receiver {
         disconnectTimer = Timer(timeInterval: disconnectTimeout,
                                 target: self,
                                 selector: #selector(handleTimeout),
@@ -675,38 +794,33 @@ public final class CastClient: NSObject {
       }
       
     case .close:
-      if originalMessage.sourceID == CastConstants.receiverName {
-        // device disconnected
-        if self.isConnected {
-          self.isConnected = false
-        }
+      switch (originalMessage.sourceID) {
+      case CastConstants.receiver:
+        DispatchQueue.main.async(execute: disconnect)
         
+        fallthrough
+        
+      case connectedApp?.transportId ?? "":
         currentStatus = nil
         currentMediaStatus = nil
         connectedApp = nil
-      } else if let connectedApp = connectedApp, originalMessage.sourceID == connectedApp.transportId {
-        currentStatus = nil
-        currentMediaStatus = nil
-        self.connectedApp = nil
+        
+      default:
+        print(originalMessage.sourceID)
+        break
       }
       
-      DispatchQueue.main.async {
-        self.stopBeating(id: originalMessage.sourceID)
-      }
     case .status:
-      self.currentStatus = CastStatus(json: json)
+      currentStatus = CastStatus(json: json)
     case .mediaStatus:
-      self.currentMediaStatus = CastMediaStatus(json: json["status"])
-    default: break
+      currentMediaStatus = CastMediaStatus(json: json["status"])
+    default:
+      break
     }
   }
   
   @objc private func handleTimeout() {
-    if self.isConnected {
-      self.isConnected = false
-    }
-    
-    stopAllBeats()
+    disconnect()
     currentStatus = nil
     currentMediaStatus = nil
     connectedApp = nil
@@ -717,26 +831,10 @@ public final class CastClient: NSObject {
     
     do {
       let payload = [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue]
-      let message = try jsonMessage(with: payload, namespace: .connection, destinationId: app.transportId)
+      let request = CastRequest(id: nextRequestId(), namespace: .connection, destinationId: app.transportId, payload: payload)
       
-      try write(data: message)
-      startBeating(id: app.transportId)
+      send(request: request)
       connectedApp = app
-    } catch {
-      NSLog("Error connecting to app: \(error)")
-    }
-  }
-  
-  private func disconnect(app: CastApp) {
-    //        NSLog("Disconnecting \(app.displayName)")
-    
-    do {
-      let payload = [CastJSONPayloadKeys.type: CastMessageType.close.rawValue]
-      let message = try jsonMessage(with: payload, namespace: .connection, destinationId: app.transportId)
-      
-      try write(data: message)
-      stopBeating(id: app.transportId)
-      connectedApp = nil
     } catch {
       NSLog("Error connecting to app: \(error)")
     }
@@ -744,10 +842,6 @@ public final class CastClient: NSObject {
   
   private func handleStatusChange(from oldStatus: CastStatus, to newStatus: CastStatus) {
     if let oldApp = oldStatus.apps.first {
-      if oldApp.transportId != newStatus.apps.first?.transportId {
-        // stop sending heartbeats to closed app
-        stopBeating(id: oldApp.transportId)
-      }
     }
   }
 }
@@ -757,9 +851,11 @@ extension CastClient: StreamDelegate {
   public func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
     switch eventCode {
     case Stream.Event.openCompleted:
+      guard !isConnected else { return }
       socketQueue.async {
         do {
           try self.sendConnectMessage()
+          
         } catch {
           NSLog("Error sending connect message: \(error)")
         }
@@ -776,8 +872,11 @@ extension CastClient: StreamDelegate {
       }
     case Stream.Event.endEncountered:
       NSLog("Input stream ended")
-      self.disconnect()
-      self.connect()
+      disconnect()
+      
+      socketQueue.async {
+//        self.connect()
+      }
     default: break
     }
   }

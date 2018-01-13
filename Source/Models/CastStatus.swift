@@ -11,7 +11,7 @@ import SwiftyJSON
 
 public final class CastStatus: NSObject {
     
-    public var volume: Double = 0.976
+    public var volume: Double = 1
     public var muted: Bool = false
     public var apps: [CastApp] = []
     
@@ -25,7 +25,7 @@ extension CastStatus {
     
     convenience init(json: JSON) {
         self.init()
-        
+//        print(json)
         let status = json[CastJSONPayloadKeys.status]
         let volume = status[CastJSONPayloadKeys.volume]
         

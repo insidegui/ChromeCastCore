@@ -13,11 +13,7 @@ import Foundation
 class CastV2PlatformReader {
   let stream: InputStream
   var readPosition = 0
-  var buffer = Data(capacity: maxBufferLength) {
-    didSet {
-      readPosition = 0
-    }
-  }
+  var buffer = Data(capacity: maxBufferLength)
   
   init(stream: InputStream) {
     self.stream = stream
@@ -75,11 +71,13 @@ class CastV2PlatformReader {
   
   private func resetBufferIfNeeded() {
     guard buffer.count >= maxBufferLength else { return }
-    
+
     if readPosition == buffer.count {
       buffer = Data(capacity: maxBufferLength)
     } else {
       buffer = buffer.advanced(by: readPosition)
     }
+    
+    readPosition = 0
   }
 }
