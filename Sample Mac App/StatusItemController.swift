@@ -94,7 +94,7 @@ extension StatusItemController: NSMenuDelegate {
 
 extension StatusItemController: CastClientDelegate {
   func castClient(_ client: CastClient, didConnectTo device: CastDevice) {
-    client.requestStatus()
+//    client.requestStatus()
   }
   
   func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
@@ -104,7 +104,6 @@ extension StatusItemController: CastClientDelegate {
     client.join() { (err, app) in
       guard let app = app else { return }
 
-//      client.requestMediaStatus(for: app)
     }
   }
   

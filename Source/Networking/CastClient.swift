@@ -250,6 +250,7 @@ public final class CastClient: NSObject {
       
       DispatchQueue.main.async {
         self.startBeating()
+        self.requestStatus()
       }
     } catch {
       NSLog("Error sending connect message: \(error)")
