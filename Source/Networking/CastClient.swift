@@ -292,6 +292,8 @@ public final class CastClient: NSObject {
             print(response)
           } else if let message = try? Extensions_Api_CastChannel_DeviceAuthMessage(serializedData: message.payloadBinary) {
             print(message)
+          } else {
+            print("Unhandled binary response")
           }
         }
       }
@@ -407,12 +409,12 @@ public final class CastClient: NSObject {
       
       switch request.payload {
       case .json(var effectivePayload):
-        print("SENDING: \(effectivePayload)")
         if effectivePayload[CastJSONPayloadKeys.requestId] == nil,
           let type = (effectivePayload[CastJSONPayloadKeys.type] as? String).flatMap({ CastMessageType(rawValue: $0) }), type.needsRequestId {
           effectivePayload[CastJSONPayloadKeys.requestId] = request.id
         }
         
+//        print("SENDING: \(effectivePayload)")
         messageData = try jsonMessage(with: effectivePayload, namespace: request.namespace, destinationId: request.destinationId)
         
       case .data(let data):
@@ -710,13 +712,68 @@ public final class CastClient: NSObject {
   public func requestDeviceConfig() {
     guard outputStream != nil else { return }
     
-    let payload: [String: Any] = [
-      CastJSONPayloadKeys.type: CastMessageType.getDeviceConfig.rawValue,
-      "params": ["version", "name", "net.ip_address"],
-      "data": [:]
+    let params = [
+      "version",
+      "name",
+      "build_info.cast_build_revision",
+      "net.ip_address",
+      "net.online",
+      "net.ssid",
+      "wifi.signal_level",
+      "wifi.noise_level"
     ]
     
-    let request = CastRequest(id: nextRequestId(), namespace: .setup, destinationId: CastConstants.receiver, payload: payload)
+    let requestId = nextRequestId()
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.getDeviceConfig.rawValue,
+      "params": params,
+      "data": [:],
+      "request_id": requestId
+    ]
+    
+    let request = CastRequest(id: requestId, namespace: .setup, destinationId: CastConstants.receiver, payload: payload)
+    
+    send(request: request) { (error, json) in
+      print(json)
+    }
+  }
+  
+  public func requestSetDeviceConfig() {
+    guard outputStream != nil else { return }
+    
+    let data: [String: Any] = [
+      "name": "JUNK",
+      "settings": [
+        
+      ]
+    ]
+    
+    let requestId = nextRequestId()
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.getDeviceConfig.rawValue,
+      "params": params,
+      "data": [:],
+      "request_id": requestId
+    ]
+    
+    let request = CastRequest(id: requestId, namespace: .setup, destinationId: CastConstants.receiver, payload: payload)
+    
+    send(request: request) { (error, json) in
+      print(json)
+    }
+  }
+  
+  public func requestAppDeviceId(app: CastApp) {
+    guard outputStream != nil else { return }
+    
+    let requestId = nextRequestId()
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.getAppDeviceId.rawValue,
+      "data": ["app_id": app.id],
+      "request_id": requestId
+    ]
+    
+    let request = CastRequest(id: requestId, namespace: .setup, destinationId: CastConstants.receiver, payload: payload)
     
     send(request: request) { (error, json) in
       print(json)
@@ -816,6 +873,7 @@ public final class CastClient: NSObject {
     case .mediaStatus:
       currentMediaStatus = CastMediaStatus(json: json["status"])
     default:
+      print(originalMessage.payloadUtf8)
       break
     }
   }

@@ -33,6 +33,7 @@ enum CastMessageType: String {
   case getDeviceInfo = "GET_DEVICE_INFO"
   case deviceInfo = "DEVICE_INFO"
   case getDeviceConfig = "eureka_info"
+  case setDeviceConfig = "set_eureka_info"
   case getAppDeviceId = "get_app_device_id"
   case multizoneStatus = "MULTIZONE_STATUS"
   case deviceAdded = "DEVICE_ADDED"
@@ -45,9 +46,12 @@ enum CastMessageType: String {
 extension CastMessageType {
   
   var needsRequestId: Bool {
-    switch self {
-    case .launch, .load, .statusRequest, .getDeviceInfo, .getAppDeviceId, .getDeviceConfig: return true
-    default: return false
+    switch (self) {
+    case .launch, .load, .statusRequest, .getDeviceInfo:
+      return true
+      
+    default:
+      return false
     }
   }
   

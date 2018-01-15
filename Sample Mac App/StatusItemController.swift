@@ -98,12 +98,12 @@ extension StatusItemController: CastClientDelegate {
   }
   
   func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
-//    print(status)
     guard status.apps.count > 0, client.connectedApp == nil else { return }
     
     client.join() { (err, app) in
       guard let app = app else { return }
 
+      client.requestAppDeviceId(app: app)
     }
   }
   
