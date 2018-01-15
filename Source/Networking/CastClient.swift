@@ -562,7 +562,7 @@ public final class CastClient: NSObject {
     stop(app: app)
   }
   
-  public func leave(app: CastApp) {
+  public func leave(_ app: CastApp) {
     do {
       let payload = [CastJSONPayloadKeys.type: CastMessageType.close.rawValue]
       let message = try jsonMessage(with: payload, namespace: .connection, destinationId: app.transportId)
@@ -751,7 +751,6 @@ public final class CastClient: NSObject {
     let requestId = nextRequestId()
     let payload: [String: Any] = [
       CastJSONPayloadKeys.type: CastMessageType.getDeviceConfig.rawValue,
-      "params": params,
       "data": [:],
       "request_id": requestId
     ]
