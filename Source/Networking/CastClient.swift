@@ -414,7 +414,7 @@ public final class CastClient: NSObject {
           effectivePayload[CastJSONPayloadKeys.requestId] = request.id
         }
         
-        print("SENDING: \(effectivePayload)")
+//        print("SENDING: \(effectivePayload)")
         messageData = try jsonMessage(with: effectivePayload, namespace: request.namespace, destinationId: request.destinationId)
         
       case .data(let data):
@@ -804,7 +804,7 @@ public final class CastClient: NSObject {
     guard data.count > 0 else { return }
     
     let json = try! JSON(data: data)
-    print(json)
+//    print(json)
     if let requestId = json[CastJSONPayloadKeys.requestId].int {
       guard requestId > greatestEncounteredRequestId else {
         return
