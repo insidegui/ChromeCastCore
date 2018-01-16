@@ -99,16 +99,18 @@ extension StatusItemController: CastClientDelegate {
   
   func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
     guard status.apps.count > 0, client.connectedApp == nil else { return }
-    
+
     client.join() { (err, app) in
       guard let app = app else { return }
 
-      client.requestAppDeviceId(app: app)
+      client.requestMediaStatus(for: app)
+//      client.requestAppDeviceId(app: app)
     }
   }
   
   func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
-    print(status.currentTime)
+    client.stopCurrentApp()
+    print(status)
   }
   
   func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: NSError) {

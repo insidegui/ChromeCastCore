@@ -414,7 +414,7 @@ public final class CastClient: NSObject {
           effectivePayload[CastJSONPayloadKeys.requestId] = request.id
         }
         
-//        print("SENDING: \(effectivePayload)")
+        print("SENDING: \(effectivePayload)")
         messageData = try jsonMessage(with: effectivePayload, namespace: request.namespace, destinationId: request.destinationId)
         
       case .data(let data):
@@ -542,13 +542,16 @@ public final class CastClient: NSObject {
   }
   
   @nonobjc public func stop(app: CastApp) {
+    let requestId = nextRequestId()
+    
     let payload: [String: Any] = [
       CastJSONPayloadKeys.type: CastMessageType.stop.rawValue,
-      CastJSONPayloadKeys.sessionId: app.sessionId
+      CastJSONPayloadKeys.sessionId: app.sessionId,
+      CastJSONPayloadKeys.requestId: requestId
     ]
-    let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiver, payload: payload)
+    let request = CastRequest(id: requestId, namespace: .receiver, destinationId: CastConstants.receiver, payload: payload)
     
-    send(request: request, response: nil)
+    send(request: request)
   }
   
   public func stopApp(_ app: CastApp) {
@@ -801,7 +804,7 @@ public final class CastClient: NSObject {
     guard data.count > 0 else { return }
     
     let json = try! JSON(data: data)
-    
+    print(json)
     if let requestId = json[CastJSONPayloadKeys.requestId].int {
       guard requestId > greatestEncounteredRequestId else {
         return
