@@ -320,8 +320,9 @@ public final class CastClient: NSObject {
   }
   
   public func removeChannel(_ channel: CastChannel) {
-    guard let channel = channels.removeValue(forKey: channel.namespace) else {
-      print("No channel attached for \(channel.namespace)")
+    let namespace = channel.namespace
+    guard let channel = channels.removeValue(forKey: namespace) else {
+      print("No channel attached for \(namespace)")
       return
     }
     
@@ -418,7 +419,7 @@ public final class CastClient: NSObject {
           effectivePayload[CastJSONPayloadKeys.requestId] = request.id
         }
         
-        //        print("SENDING: \(effectivePayload)")
+                print("SEND: \(effectivePayload)")
         messageData = try jsonMessage(with: effectivePayload, namespace: request.namespace, destinationId: request.destinationId)
         
       case .data(let data):
@@ -768,7 +769,7 @@ public final class CastClient: NSObject {
     guard data.count > 0 else { return }
     
     let json = try! JSON(data: data)
-    //    print(json)
+    print("RECV: \(json)")
     if let requestId = json[CastJSONPayloadKeys.requestId].int {
       guard requestId > greatestEncounteredRequestId else {
         return

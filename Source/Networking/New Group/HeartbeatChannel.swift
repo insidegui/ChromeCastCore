@@ -31,7 +31,10 @@ class HeartbeatChannel: CastTextChannel {
   }
   
   @objc private func sendPing() {
-    send(payload: [CastJSONPayloadKeys.type: CastMessageType.ping.rawValue],
-         withDestinationId: CastConstants.transport)
+    let request = client.createRequest(withNamespace: namespace,
+                                       destinationId: CastConstants.transport,
+                                       payload: [CastJSONPayloadKeys.type: CastMessageType.ping.rawValue])
+    
+    client.send(request: request)
   }
 }
