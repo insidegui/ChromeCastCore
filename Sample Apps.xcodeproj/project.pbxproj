@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		027E35CD200EAD5300A863E6 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 027E35CC200EAD5300A863E6 /* SwiftyJSON.framework */; };
 		028733BB200992DC0015266E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028733BA200992DC0015266E /* AppDelegate.swift */; };
 		028733BD200992DC0015266E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028733BC200992DC0015266E /* ViewController.swift */; };
 		028733C0200992DC0015266E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 028733BE200992DC0015266E /* Main.storyboard */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		027E35CC200EAD5300A863E6 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/Mac/SwiftyJSON.framework; sourceTree = "<group>"; };
 		028733B7200992DC0015266E /* Sample iOS App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sample iOS App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		028733BA200992DC0015266E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		028733BC200992DC0015266E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -56,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				027E35CD200EAD5300A863E6 /* SwiftyJSON.framework in Frameworks */,
 				0298FB932009952000A0B016 /* ChromeCastCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -121,6 +124,7 @@
 		0298FB902009951A00A0B016 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				027E35CC200EAD5300A863E6 /* SwiftyJSON.framework */,
 				0298FB942009952000A0B016 /* ChromeCastCore.framework */,
 				0298FB922009951A00A0B016 /* ChromeCastCore.framework */,
 			);
@@ -237,6 +241,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftProtobuf.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Result.framework",
 			);
 			outputPaths = (
 			);
@@ -252,6 +257,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/Mac/SwiftyJSON.framework",
 				"$(SRCROOT)/Carthage/Build/Mac/SwiftProtobuf.framework",
+				"$(SRCROOT)/Carthage/Build/Mac/Result.framework",
 			);
 			outputPaths = (
 			);
@@ -462,6 +468,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 7XLNECBC46;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = "Sample Mac App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
@@ -483,6 +493,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 7XLNECBC46;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = "Sample Mac App/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;

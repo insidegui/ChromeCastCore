@@ -47,7 +47,7 @@ extension CastMessageType {
   
   var needsRequestId: Bool {
     switch (self) {
-    case .launch, .load, .statusRequest, .getDeviceInfo:
+    case .launch, .load, .statusRequest, .getDeviceInfo, .stop:
       return true
       
     default:
