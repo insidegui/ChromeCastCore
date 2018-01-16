@@ -8,6 +8,7 @@
 
 import Cocoa
 import ChromeCastCore
+import SwiftyJSON
 
 class StatusItemController: NSObject {
   let statusItem = NSStatusBar.system.statusItem(withLength: 36)
@@ -98,6 +99,8 @@ extension StatusItemController: CastClientDelegate {
   }
   
   func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
+    print(status)
+    
     guard status.apps.count > 0, client.connectedApp == nil else { return }
 
     client.join() { result in
@@ -112,8 +115,8 @@ extension StatusItemController: CastClientDelegate {
   }
   
   func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
-    client.stopCurrentApp()
-    print(status)
+    print(status.metadata)
+//    client.stopCurrentApp()
   }
   
   func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: NSError) {
