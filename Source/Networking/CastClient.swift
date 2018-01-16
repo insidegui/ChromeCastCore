@@ -407,7 +407,7 @@ public final class CastClient: NSObject {
           effectivePayload[CastJSONPayloadKeys.requestId] = request.id
         }
         
-        print("SEND: \(effectivePayload)")
+//        print("SEND: \(effectivePayload)")
         messageData = try CastMessage.encodedMessage(payload: effectivePayload,
                                                      namespace: request.namespace,
                                                      sourceId: senderName,
