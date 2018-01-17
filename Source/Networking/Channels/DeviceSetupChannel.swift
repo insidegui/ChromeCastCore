@@ -10,7 +10,7 @@ import Foundation
 
 class DeviceSetupChannel: CastChannel {
   init() {
-    super.init(namespace: .setup)
+    super.init(namespace: CastNamespace.setup)
   }
   
   public func requestDeviceConfig() {
@@ -47,12 +47,12 @@ class DeviceSetupChannel: CastChannel {
   }
   
   public func requestSetDeviceConfig() {
-    let data: [String: Any] = [
-      "name": "JUNK",
-      "settings": [
-        
-      ]
-    ]
+//    let data: [String: Any] = [
+//      "name": "JUNK",
+//      "settings": [
+//        
+//      ]
+//    ]
     
     let payload: [String: Any] = [
       CastJSONPayloadKeys.type: CastMessageType.getDeviceConfig.rawValue,

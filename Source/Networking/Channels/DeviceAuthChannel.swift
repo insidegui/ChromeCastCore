@@ -10,7 +10,7 @@ import Foundation
 
 class DeviceAuthChannel: CastChannel {
   init() {
-    super.init(namespace: .auth)
+    super.init(namespace: CastNamespace.auth)
   }
   
   public func sendAuthChallenge() throws {

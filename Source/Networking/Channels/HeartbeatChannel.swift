@@ -35,7 +35,7 @@ class HeartbeatChannel: CastChannel {
   }
   
   init() {
-    super.init(namespace: .heartbeat)
+    super.init(namespace: CastNamespace.heartbeat)
   }
   
   override func handleResponse(_ json: JSON, sourceId: String) {
@@ -52,6 +52,7 @@ class HeartbeatChannel: CastChannel {
     }
     
     if type == .ping {
+      sendPong(to: sourceId)
       print("PING from \(sourceId)")
     }
 
@@ -71,6 +72,14 @@ class HeartbeatChannel: CastChannel {
     let request = client.request(withNamespace: namespace,
                                        destinationId: CastConstants.transport,
                                        payload: [CastJSONPayloadKeys.type: CastMessageType.ping.rawValue])
+    
+    client.send(request)
+  }
+  
+  private func sendPong(to destinationId: String) {
+    let request = client.request(withNamespace: namespace,
+                                 destinationId: destinationId,
+                                 payload: [CastJSONPayloadKeys.type: CastMessageType.pong.rawValue])
     
     client.send(request)
   }

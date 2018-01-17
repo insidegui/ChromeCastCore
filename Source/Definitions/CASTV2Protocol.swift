@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension String {
+struct CastNamespace {
   static let auth = "urn:x-cast:com.google.cast.tp.deviceauth"
   static let connection = "urn:x-cast:com.google.cast.tp.connection"
   static let heartbeat = "urn:x-cast:com.google.cast.tp.heartbeat"

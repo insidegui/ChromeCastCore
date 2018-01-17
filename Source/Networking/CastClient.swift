@@ -62,7 +62,7 @@ final class CastRequest: NSObject {
   @objc optional func castClient(_ client: CastClient, willConnectTo device: CastDevice)
   @objc optional func castClient(_ client: CastClient, didConnectTo device: CastDevice)
   @objc optional func castClient(_ client: CastClient, didDisconnectFrom device: CastDevice)
-  @objc optional func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: NSError)
+  @objc optional func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: Error?)
   
   @objc optional func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus)
   @objc optional func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus)
@@ -231,21 +231,12 @@ public final class CastClient: NSObject {
   fileprivate func sendConnectMessage() throws {
     guard outputStream != nil else { return }
     
-    do {
-      let message = try connectMessage()
-      
-      try write(data: message)
-      
-      //            NSLog("CONNECT")
-      
-      DispatchQueue.main.async {
-        self.addChannel(CastChannel(namespace: .connection))
-        _ = self.receiverControlChannel
-        _ = self.mediaControlChannel
-        _ = self.heartbeatChannel
-      }
-    } catch {
-      NSLog("Error sending connect message: \(error)")
+    _ = connectionChannel
+    
+    DispatchQueue.main.async {
+      _ = self.receiverControlChannel
+      _ = self.mediaControlChannel
+      _ = self.heartbeatChannel
     }
   }
   
@@ -306,6 +297,13 @@ public final class CastClient: NSObject {
   
   private lazy var heartbeatChannel: HeartbeatChannel = {
     let channel = HeartbeatChannel()
+    self.addChannel(channel)
+    
+    return channel
+  }()
+  
+  private lazy var connectionChannel: DeviceConnectionChannel = {
+    let channel = DeviceConnectionChannel()
     self.addChannel(channel)
     
     return channel
@@ -372,16 +370,16 @@ public final class CastClient: NSObject {
                         payload: payload)
   }
   
-  private func connectMessage() throws -> Data {
-    return try CastMessage.encodedMessage(payload: [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue],
-                                          namespace: .connection,
-                                          sourceId: senderName,
-                                          destinationId: CastConstants.receiver)
-  }
+//  private func connectMessage() throws -> Data {
+//    return try CastMessage.encodedMessage(payload: [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue],
+//                                          namespace: .connection,
+//                                          sourceId: senderName,
+//                                          destinationId: CastConstants.receiver)
+//  }
   
   private func closeMessage() throws -> Data {
     return try CastMessage.encodedMessage(payload: [CastJSONPayloadKeys.type: CastMessageType.close.rawValue],
-                                          namespace: .connection,
+                                          namespace: CastNamespace.connection,
                                           sourceId: senderName,
                                           destinationId: CastConstants.receiver)
   }
@@ -490,16 +488,8 @@ public final class CastClient: NSObject {
   }
   
   public func leave(_ app: CastApp) {
-    do {
-      let payload = [CastJSONPayloadKeys.type: CastMessageType.close.rawValue]
-      let message = try CastMessage.encodedMessage(payload: payload, namespace: .connection, sourceId: senderName, destinationId: app.transportId)
-      
-      try write(data: message)
-      
-      connectedApp = nil
-    } catch {
-      NSLog("Error connecting to app: \(error)")
-    }
+    connectionChannel.leave(app)
+    connectedApp = nil
   }
   
   public func load(media: CastMedia, with app: CastApp, completion: @escaping (Result<CastMediaStatus, CastError>) -> Void) {
@@ -515,14 +505,7 @@ public final class CastClient: NSObject {
   }
   
   private func connect(to app: CastApp) {
-    //        NSLog("Connecting to \(app.displayName)")
-    
-    let payload = [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue]
-    let request = self.request(withNamespace: .connection,
-                               destinationId: app.transportId,
-                               payload: payload)
-    
-    send(request)
+    connectionChannel.connect(to: app)
     connectedApp = app
   }
 }
@@ -545,7 +528,7 @@ extension CastClient: StreamDelegate {
       NSLog("Stream error occurred: \(aStream.streamError.debugDescription)")
       
       DispatchQueue.main.async {
-        self.delegate?.castClient?(self, connectionTo: self.device, didFailWith: aStream.streamError as! NSError)
+        self.delegate?.castClient?(self, connectionTo: self.device, didFailWith: aStream.streamError)
       }
     case Stream.Event.hasBytesAvailable:
       socketQueue.async {
@@ -554,10 +537,7 @@ extension CastClient: StreamDelegate {
     case Stream.Event.endEncountered:
       NSLog("Input stream ended")
       disconnect()
-      
-      socketQueue.async {
-        //        self.connect()
-      }
+  
     default: break
     }
   }

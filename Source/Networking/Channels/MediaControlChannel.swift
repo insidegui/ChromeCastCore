@@ -12,7 +12,7 @@ import SwiftyJSON
 
 class MediaControlChannel: CastChannel {
   init() {
-    super.init(namespace: .media)
+    super.init(namespace: CastNamespace.media)
   }
   
   override func handleResponse(_ json: JSON, sourceId: String) {

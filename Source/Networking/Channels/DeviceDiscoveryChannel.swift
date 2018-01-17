@@ -10,7 +10,7 @@ import Foundation
 
 class DeviceDiscoveryChannel: CastChannel {
   init() {
-    super.init(namespace: .discovery)
+    super.init(namespace: CastNamespace.discovery)
   }
   
   func requestDeviceInfo() {

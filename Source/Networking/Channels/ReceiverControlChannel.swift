@@ -20,7 +20,7 @@ class ReceiverControlChannel: CastChannel {
   }
   
   init() {
-    super.init(namespace: .receiver)
+    super.init(namespace: CastNamespace.receiver)
   }
   
   override func handleResponse(_ json: JSON, sourceId: String) {
