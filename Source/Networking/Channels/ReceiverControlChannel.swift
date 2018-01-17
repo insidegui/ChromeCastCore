@@ -120,6 +120,32 @@ class ReceiverControlChannel: CastChannel {
     
     client.send(request)
   }
+  
+  public func setVolume(_ volume: Float) {
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.setVolume.rawValue,
+      CastJSONPayloadKeys.volume: [CastJSONPayloadKeys.level: volume]
+    ]
+    
+    let request = client.request(withNamespace: namespace,
+                                 destinationId: CastConstants.receiver,
+                                 payload: payload)
+    
+    client.send(request)
+  }
+  
+  public func setMuted(_ isMuted: Bool) {
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.setVolume.rawValue,
+      CastJSONPayloadKeys.volume: [CastJSONPayloadKeys.muted: isMuted]
+    ]
+    
+    let request = client.request(withNamespace: namespace,
+                                 destinationId: CastConstants.receiver,
+                                 payload: payload)
+    
+    client.send(request)
+  }
 }
 
 protocol ReceiverControlChannelDelegate {

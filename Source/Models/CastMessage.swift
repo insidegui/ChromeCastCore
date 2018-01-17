@@ -9,33 +9,26 @@
 import Foundation
 
 extension CastMessage {
-  static func encodedMessage(payload: [String: Any], namespace: String, sourceId: String, destinationId: String) throws -> Data {
-    let json = try JSONSerialization.data(withJSONObject: payload, options: [])
+  static func encodedMessage(payload: CastPayload, namespace: String, sourceId: String, destinationId: String) throws -> Data {
+    var message = CastMessage()
+    message.protocolVersion = .castv210
+    message.sourceID = sourceId
+    message.destinationID = destinationId
+    message.namespace = namespace
     
-    guard let jsonString = String(data: json, encoding: .utf8) else {
-      fatalError("error forming json string")
-    }
-    
-    let message = CastMessage.with {
-      $0.protocolVersion = .castv210
-      $0.sourceID = sourceId
-      $0.destinationID = destinationId
-      $0.namespace = namespace
-      $0.payloadType = .string
-      $0.payloadUtf8 = jsonString
-    }
-    
-    return try message.serializedData()
-  }
-  
-  static func encodedMessage(payload: Data, namespace: String, sourceId: String, destinationId: String) throws -> Data {
-    let message = CastMessage.with {
-      $0.protocolVersion = .castv210
-      $0.sourceID = sourceId
-      $0.destinationID = destinationId
-      $0.namespace = namespace
-      $0.payloadType = .binary
-      $0.payloadBinary = payload
+    switch payload {
+    case .json(let payload):
+      let json = try JSONSerialization.data(withJSONObject: payload, options: [])
+      
+      guard let jsonString = String(data: json, encoding: .utf8) else {
+        fatalError("error forming json string")
+      }
+      
+      message.payloadType = .string
+      message.payloadUtf8 = jsonString
+    case .data(let payload):
+      message.payloadType = .binary
+      message.payloadBinary = payload
     }
     
     return try message.serializedData()

@@ -51,20 +51,20 @@ extension CastMedia {
     
     var dict: [String: Any] {
         return [
-            "autoplay": autoplay,
-            "activeTrackIds": [],
-            "repeatMode": "REPEAT_OFF",
-            "currentTime": currentTime,
-            "media": [
-                "contentId": url.absoluteString,
-                "contentType": contentType,
-                "streamType": streamType.rawValue,
-                "metadata": [
-                    "type": 0,
-                    "metadataType": 0,
-                    "title": title,
-                    "images": [
-                        ["url": poster.absoluteString]
+            CastJSONPayloadKeys.autoplay: autoplay,
+            CastJSONPayloadKeys.activeTrackIds: [],
+            CastJSONPayloadKeys.repeatMode: "REPEAT_OFF",
+            CastJSONPayloadKeys.currentTime: currentTime,
+            CastJSONPayloadKeys.media: [
+                CastJSONPayloadKeys.contentId: url.absoluteString,
+                CastJSONPayloadKeys.contentType: contentType,
+                CastJSONPayloadKeys.streamType: streamType.rawValue,
+                CastJSONPayloadKeys.metadata: [
+                    CastJSONPayloadKeys.type: 0,
+                    CastJSONPayloadKeys.metadataType: 0,
+                    CastJSONPayloadKeys.title: title,
+                    CastJSONPayloadKeys.images: [
+                        [CastJSONPayloadKeys.url: poster.absoluteString]
                     ]
                 ]
             ]

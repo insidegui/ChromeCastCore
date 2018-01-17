@@ -240,20 +240,6 @@ public final class CastClient: NSObject {
     }
   }
   
-  public func sendCloseMessage() throws {
-    guard outputStream != nil else { return }
-    
-    do {
-      let message = try closeMessage()
-      
-      try write(data: message)
-      
-      //            NSLog("CLOSE")
-    } catch {
-      NSLog("Error sending connect message: \(error)")
-    }
-  }
-  
   private var reader: CastV2PlatformReader?
   
   fileprivate func readStream() {
@@ -357,7 +343,11 @@ public final class CastClient: NSObject {
   }
   
   func request(withNamespace namespace: String, destinationId: String, payload: [String: Any]) -> CastRequest {
-    return  CastRequest(id: nextRequestId(),
+    var payload = payload
+    let requestId = nextRequestId()
+    payload[CastJSONPayloadKeys.requestId] = requestId
+    
+    return  CastRequest(id: requestId,
                         namespace: namespace,
                         destinationId: destinationId,
                         payload: payload)
@@ -370,19 +360,12 @@ public final class CastClient: NSObject {
                         payload: payload)
   }
   
-//  private func connectMessage() throws -> Data {
-//    return try CastMessage.encodedMessage(payload: [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue],
-//                                          namespace: .connection,
+//  private func closeMessage() throws -> Data {
+//    return try CastMessage.encodedMessage(payload: [CastJSONPayloadKeys.type: CastMessageType.close.rawValue],
+//                                          namespace: CastNamespace.connection,
 //                                          sourceId: senderName,
 //                                          destinationId: CastConstants.receiver)
 //  }
-  
-  private func closeMessage() throws -> Data {
-    return try CastMessage.encodedMessage(payload: [CastJSONPayloadKeys.type: CastMessageType.close.rawValue],
-                                          namespace: CastNamespace.connection,
-                                          sourceId: senderName,
-                                          destinationId: CastConstants.receiver)
-  }
   
   
   
@@ -396,27 +379,10 @@ public final class CastClient: NSObject {
     }
     
     do {
-      let messageData: Data
-      
-      switch request.payload {
-      case .json(var effectivePayload):
-        if effectivePayload[CastJSONPayloadKeys.requestId] == nil,
-          let type = (effectivePayload[CastJSONPayloadKeys.type] as? String).flatMap({ CastMessageType(rawValue: $0) }), type.needsRequestId {
-          effectivePayload[CastJSONPayloadKeys.requestId] = request.id
-        }
-        
-//        print("SEND: \(effectivePayload)")
-        messageData = try CastMessage.encodedMessage(payload: effectivePayload,
-                                                     namespace: request.namespace,
-                                                     sourceId: senderName,
-                                                     destinationId: request.destinationId)
-        
-      case .data(let data):
-        messageData = try CastMessage.encodedMessage(payload: data,
-                                                     namespace: request.namespace,
-                                                     sourceId: senderName,
-                                                     destinationId: request.destinationId)
-      }
+      let messageData = try CastMessage.encodedMessage(payload: request.payload,
+                                                       namespace: request.namespace,
+                                                       sourceId: senderName,
+                                                       destinationId: request.destinationId)
       
       try write(data: messageData)
     } catch {
@@ -507,6 +473,86 @@ public final class CastClient: NSObject {
   private func connect(to app: CastApp) {
     connectionChannel.connect(to: app)
     connectedApp = app
+  }
+  
+  public func pause() {
+    guard let app = connectedApp else { return }
+    
+    if let mediaStatus = currentMediaStatus {
+      mediaControlChannel.sendPause(for: app, mediaSessionId: mediaStatus.mediaSessionId)
+    } else {
+      mediaControlChannel.requestMediaStatus(for: app) { result in
+        switch result {
+        case .success(let mediaStatus):
+          self.mediaControlChannel.sendPause(for: app, mediaSessionId: mediaStatus.mediaSessionId)
+        
+        case .failure(let error):
+            print(error)
+        }
+      }
+    }
+  }
+  
+  public func play() {
+    guard let app = connectedApp else { return }
+    
+    if let mediaStatus = currentMediaStatus {
+      mediaControlChannel.sendPlay(for: app, mediaSessionId: mediaStatus.mediaSessionId)
+    } else {
+      mediaControlChannel.requestMediaStatus(for: app) { result in
+        switch result {
+        case .success(let mediaStatus):
+          self.mediaControlChannel.sendPlay(for: app, mediaSessionId: mediaStatus.mediaSessionId)
+          
+        case .failure(let error):
+          print(error)
+        }
+      }
+    }
+  }
+  
+  public func stop() {
+    guard let app = connectedApp else { return }
+    
+    if let mediaStatus = currentMediaStatus {
+      mediaControlChannel.sendStop(for: app, mediaSessionId: mediaStatus.mediaSessionId)
+    } else {
+      mediaControlChannel.requestMediaStatus(for: app) { result in
+        switch result {
+        case .success(let mediaStatus):
+          self.mediaControlChannel.sendStop(for: app, mediaSessionId: mediaStatus.mediaSessionId)
+          
+        case .failure(let error):
+          print(error)
+        }
+      }
+    }
+  }
+  
+  public func seek(to currentTime: Float) {
+    guard let app = connectedApp else { return }
+    
+    if let mediaStatus = currentMediaStatus {
+      mediaControlChannel.sendSeek(to: currentTime, for: app, mediaSessionId: mediaStatus.mediaSessionId)
+    } else {
+      mediaControlChannel.requestMediaStatus(for: app) { result in
+        switch result {
+        case .success(let mediaStatus):
+          self.mediaControlChannel.sendSeek(to: currentTime, for: app, mediaSessionId: mediaStatus.mediaSessionId)
+          
+        case .failure(let error):
+          print(error)
+        }
+      }
+    }
+  }
+  
+  public func setVolume(_ volume: Float) {
+    receiverControlChannel.setVolume(volume)
+  }
+  
+  public func setMuted(_ muted: Bool) {
+    receiverControlChannel.setMuted(muted)
   }
 }
 

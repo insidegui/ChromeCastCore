@@ -106,7 +106,7 @@ extension StatusItemController: CastClientDelegate {
     client.join() { result in
       switch result {
       case .success(let app):
-        client.requestMediaStatus(for: app)
+        client.setMuted(true)
         
       case .failure(let error):
         print(error)
@@ -115,7 +115,7 @@ extension StatusItemController: CastClientDelegate {
   }
   
   func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
-    print(status.metadata)
+//    print(status.metadata)
 //    client.stopCurrentApp()
   }
   

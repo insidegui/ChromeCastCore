@@ -27,6 +27,10 @@ enum CastMessageType: String {
   case launch = "LAUNCH"
   case stop = "STOP"
   case load = "LOAD"
+  case pause = "PAUSE"
+  case play = "PLAY"
+  case seek = "SEEK"
+  case setVolume = "SET_VOLUME"
   case statusRequest = "GET_STATUS"
   case availableApps = "GET_APP_AVAILABILITY"
   case mediaStatus = "MEDIA_STATUS"
@@ -51,7 +55,7 @@ extension CastMessageType {
       return true
       
     default:
-      return false
+      return true
     }
   }
   
@@ -76,6 +80,21 @@ struct CastJSONPayloadKeys {
   static let mediaSessionId = "mediaSessionId"
   static let availability = "availability"
   static let name = "name"
+  static let currentTime = "currentTime"
+  static let media = "media"
+  static let repeatMode = "repeatMode"
+  static let autoplay = "autoplay"
+  static let contentId = "contentId"
+  static let contentType = "contentType"
+  static let streamType = "streamType"
+  static let metadata = "metadata"
+  static let metadataType = "metadataType"
+  static let title = "title"
+  static let images = "images"
+  static let url = "url"
+  static let activeTrackIds = "activeTrackIds"
+  static let playbackRate = "playbackRate"
+  static let playerState = "playerState"
 }
 
 struct CastConstants {

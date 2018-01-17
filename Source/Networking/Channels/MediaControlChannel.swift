@@ -26,7 +26,7 @@ class MediaControlChannel: CastChannel {
     
     switch type {
     case .mediaStatus:
-      client.channel(self, didReceive: CastMediaStatus(json: json["status"]))
+      client.channel(self, didReceive: CastMediaStatus(json: json))
       
     default:
       print(rawType)
@@ -56,6 +56,46 @@ class MediaControlChannel: CastChannel {
     } else {
       client.send(request)
     }
+  }
+  
+  public func sendPause(for app: CastApp, mediaSessionId: Int) {
+    send(.pause, for: app, mediaSessionId: mediaSessionId)
+  }
+  
+  public func sendPlay(for app: CastApp, mediaSessionId: Int) {
+    send(.play, for: app, mediaSessionId: mediaSessionId)
+  }
+  
+  public func sendStop(for app: CastApp, mediaSessionId: Int) {
+    send(.stop, for: app, mediaSessionId: mediaSessionId)
+  }
+  
+  public func sendSeek(to currentTime: Float, for app: CastApp, mediaSessionId: Int) {
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: CastMessageType.seek.rawValue,
+      CastJSONPayloadKeys.sessionId: app.sessionId,
+      CastJSONPayloadKeys.currentTime: currentTime,
+      CastJSONPayloadKeys.mediaSessionId: mediaSessionId
+    ]
+    
+    let request = client.request(withNamespace: namespace,
+                                 destinationId: app.transportId,
+                                 payload: payload)
+    
+    client.send(request)
+  }
+  
+  private func send(_ message: CastMessageType, for app: CastApp, mediaSessionId: Int) {
+    let payload: [String: Any] = [
+      CastJSONPayloadKeys.type: message.rawValue,
+      CastJSONPayloadKeys.mediaSessionId: mediaSessionId
+    ]
+    
+    let request = client.request(withNamespace: namespace,
+                                 destinationId: app.transportId,
+                                 payload: payload)
+    
+    client.send(request)
   }
   
   public func load(media: CastMedia, with app: CastApp, completion: @escaping (Result<CastMediaStatus, CastError>) -> Void) {
