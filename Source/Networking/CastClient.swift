@@ -69,47 +69,11 @@ final class CastRequest: NSObject {
   
 }
 
-public final class CastClient: NSObject {
+public final class CastClient: NSObject, RequestDispatchable, Channelable {
   
   public let device: CastDevice
   public weak var delegate: CastClientDelegate?
   public var connectedApp: CastApp?
-  
-  public init(device: CastDevice) {
-    self.device = device
-    
-    super.init()
-  }
-  
-  deinit {
-    disconnect()
-  }
-  
-  // MARK: - Socket
-  
-  public var isConnected = false {
-    didSet {
-      if oldValue != isConnected {
-        if isConnected {
-          DispatchQueue.main.async { self.delegate?.castClient?(self, didConnectTo: self.device) }
-        } else {
-          DispatchQueue.main.async { self.delegate?.castClient?(self, didDisconnectFrom: self.device) }
-        }
-      }
-    }
-  }
-  
-  private var inputStream: InputStream! {
-    didSet {
-      if let inputStream = inputStream {
-        reader = CastV2PlatformReader(stream: inputStream)
-      } else {
-        reader = nil
-      }
-    }
-  }
-  
-  private var outputStream: OutputStream!
   
   public private(set) var currentStatus: CastStatus? {
     didSet {
@@ -139,6 +103,42 @@ public final class CastClient: NSObject {
   
   public var statusDidChange: ((CastStatus) -> Void)?
   public var mediaStatusDidChange: ((CastMediaStatus) -> Void)?
+  
+  public init(device: CastDevice) {
+    self.device = device
+    
+    super.init()
+  }
+  
+  deinit {
+    disconnect()
+  }
+  
+  // MARK: - Socket Setup
+  
+  public var isConnected = false {
+    didSet {
+      if oldValue != isConnected {
+        if isConnected {
+          DispatchQueue.main.async { self.delegate?.castClient?(self, didConnectTo: self.device) }
+        } else {
+          DispatchQueue.main.async { self.delegate?.castClient?(self, didDisconnectFrom: self.device) }
+        }
+      }
+    }
+  }
+  
+  private var inputStream: InputStream! {
+    didSet {
+      if let inputStream = inputStream {
+        reader = CastV2PlatformReader(stream: inputStream)
+      } else {
+        reader = nil
+      }
+    }
+  }
+  
+  private var outputStream: OutputStream!
   
   fileprivate lazy var socketQueue = DispatchQueue.global(qos: .userInitiated)
   
@@ -209,7 +209,7 @@ public final class CastClient: NSObject {
     }
   }
   
-  // MARK: - Socket
+  // MARK: - Socket Lifecycle
   
   private func write(data: Data) throws {
     var payloadSize = UInt32(data.count).bigEndian
@@ -277,9 +277,9 @@ public final class CastClient: NSObject {
     }
   }
   
-  //MARK: - Channels
+  //MARK: - Channelable
   
-  private var channels = [String: CastChannel]()
+  var channels = [String: CastChannel]()
   
   private lazy var heartbeatChannel: HeartbeatChannel = {
     let channel = HeartbeatChannel()
@@ -308,72 +308,22 @@ public final class CastClient: NSObject {
     
     return channel
   }()
-  
-  public func addChannel(_ channel: CastChannel) {
-    let namespace = channel.namespace
-    guard channels[namespace] == nil else {
-      print("Channel already attached for \(namespace)")
-      return
-    }
-    
-    channels[namespace] = channel
-    channel.client = self
-  }
-  
-  public func removeChannel(_ channel: CastChannel) {
-    let namespace = channel.namespace
-    guard let channel = channels.removeValue(forKey: namespace) else {
-      print("No channel attached for \(namespace)")
-      return
-    }
-    
-    channel.client = nil
-  }
-  
-  // MARK: - Message builder
-  
-  private let senderName: String = "sender-\(UUID().uuidString)"
+
+  // MARK: - Request response
   
   private lazy var currentRequestId = Int(arc4random_uniform(800))
   
-  private func nextRequestId() -> Int {
+  func nextRequestId() -> Int {
     currentRequestId += 1
     
     return currentRequestId
   }
   
-  func request(withNamespace namespace: String, destinationId: String, payload: [String: Any]) -> CastRequest {
-    var payload = payload
-    let requestId = nextRequestId()
-    payload[CastJSONPayloadKeys.requestId] = requestId
-    
-    return  CastRequest(id: requestId,
-                        namespace: namespace,
-                        destinationId: destinationId,
-                        payload: payload)
-  }
-  
-  func request(withNamespace namespace: String, destinationId: String, payload: Data) -> CastRequest {
-    return  CastRequest(id: nextRequestId(),
-                        namespace: namespace,
-                        destinationId: destinationId,
-                        payload: payload)
-  }
-  
-//  private func closeMessage() throws -> Data {
-//    return try CastMessage.encodedMessage(payload: [CastJSONPayloadKeys.type: CastMessageType.close.rawValue],
-//                                          namespace: CastNamespace.connection,
-//                                          sourceId: senderName,
-//                                          destinationId: CastConstants.receiver)
-//  }
-  
-  
-  
-  // MARK - Request response
+  private let senderName: String = "sender-\(UUID().uuidString)"
   
   private var responseHandlers = [Int: CastResponseHandler]()
   
-  func send(_ request: CastRequest, response: CastResponseHandler? = nil) {
+  func send(_ request: CastRequest, response: CastResponseHandler?) {
     if let response = response {
       responseHandlers[request.id] = response
     }
@@ -401,11 +351,14 @@ public final class CastClient: NSObject {
   // MARK: - Public messages
   
   public func getAppAvailability(apps: [CastApp], completion: @escaping (Result<AppAvailability, CastError>) -> Void) {
+    guard outputStream != nil else { return }
+    
     receiverControlChannel.getAppAvailability(apps: apps, completion: completion)
   }
   
   public func join(app: CastApp? = nil, completion: @escaping (Result<CastApp, CastError>) -> Void) {
-    guard let target = app ?? currentStatus?.apps.first else {
+    guard outputStream != nil,
+      let target = app ?? currentStatus?.apps.first else {
       completion(Result(error: CastError.session("No Apps Running")))
       return
     }
@@ -435,6 +388,8 @@ public final class CastClient: NSObject {
   }
   
   public func launch(appId: CastAppIdentifier, completion: @escaping (Result<CastApp, CastError>) -> Void) {
+    guard outputStream != nil else { return }
+    
     receiverControlChannel.launch(appId: appId) { [weak self] result in
       switch result {
       case .success(let app):
@@ -448,12 +403,14 @@ public final class CastClient: NSObject {
   }
   
   public func stopCurrentApp() {
-    guard let app = currentStatus?.apps.first else { return }
+    guard outputStream != nil, let app = currentStatus?.apps.first else { return }
     
     receiverControlChannel.stop(app: app)
   }
   
   public func leave(_ app: CastApp) {
+    guard outputStream != nil else { return }
+    
     connectionChannel.leave(app)
     connectedApp = nil
   }
@@ -471,12 +428,14 @@ public final class CastClient: NSObject {
   }
   
   private func connect(to app: CastApp) {
+    guard outputStream != nil else { return }
+    
     connectionChannel.connect(to: app)
     connectedApp = app
   }
   
   public func pause() {
-    guard let app = connectedApp else { return }
+    guard outputStream != nil, let app = connectedApp else { return }
     
     if let mediaStatus = currentMediaStatus {
       mediaControlChannel.sendPause(for: app, mediaSessionId: mediaStatus.mediaSessionId)
@@ -494,7 +453,7 @@ public final class CastClient: NSObject {
   }
   
   public func play() {
-    guard let app = connectedApp else { return }
+    guard outputStream != nil, let app = connectedApp else { return }
     
     if let mediaStatus = currentMediaStatus {
       mediaControlChannel.sendPlay(for: app, mediaSessionId: mediaStatus.mediaSessionId)
@@ -512,7 +471,7 @@ public final class CastClient: NSObject {
   }
   
   public func stop() {
-    guard let app = connectedApp else { return }
+    guard outputStream != nil, let app = connectedApp else { return }
     
     if let mediaStatus = currentMediaStatus {
       mediaControlChannel.sendStop(for: app, mediaSessionId: mediaStatus.mediaSessionId)
@@ -530,7 +489,7 @@ public final class CastClient: NSObject {
   }
   
   public func seek(to currentTime: Float) {
-    guard let app = connectedApp else { return }
+    guard outputStream != nil, let app = connectedApp else { return }
     
     if let mediaStatus = currentMediaStatus {
       mediaControlChannel.sendSeek(to: currentTime, for: app, mediaSessionId: mediaStatus.mediaSessionId)
@@ -548,16 +507,19 @@ public final class CastClient: NSObject {
   }
   
   public func setVolume(_ volume: Float) {
+    guard outputStream != nil else { return }
+    
     receiverControlChannel.setVolume(volume)
   }
   
   public func setMuted(_ muted: Bool) {
+    guard outputStream != nil else { return }
+    
     receiverControlChannel.setMuted(muted)
   }
 }
 
 extension CastClient: StreamDelegate {
-  
   public func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
     switch eventCode {
     case Stream.Event.openCompleted:
@@ -587,7 +549,6 @@ extension CastClient: StreamDelegate {
     default: break
     }
   }
-  
 }
 
 extension CastClient: ReceiverControlChannelDelegate {
@@ -603,6 +564,12 @@ extension CastClient: MediaControlChannelDelegate {
 }
 
 extension CastClient: HeartbeatChannelDelegate {
+  func channelDidConnect(_ channel: HeartbeatChannel) {
+    if !isConnected {
+      isConnected = true
+    }
+  }
+  
   func channelDidTimeout(_ channel: HeartbeatChannel) {
     disconnect()
     currentStatus = nil

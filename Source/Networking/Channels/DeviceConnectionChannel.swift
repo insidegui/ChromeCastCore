@@ -9,9 +9,9 @@
 import Foundation
 
 class DeviceConnectionChannel: CastChannel {
-  override weak var client: CastClient! {
+  override weak var sink: RequestDispatchable! {
     didSet {
-      if let _ = client {
+      if let _ = sink {
         connect()
       }
     }
@@ -22,29 +22,26 @@ class DeviceConnectionChannel: CastChannel {
   }
   
   func connect() {
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                  destinationId: CastConstants.receiver,
                                  payload: [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue])
     
-    client.send(request)
+    send(request)
   }
   
   func connect(to app: CastApp) {
-    //        NSLog("Connecting to \(app.displayName)")
-    
-    let payload = [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue]
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                  destinationId: app.transportId,
-                                 payload: payload)
+                                 payload: [CastJSONPayloadKeys.type: CastMessageType.connect.rawValue])
     
-    client.send(request)
+    send(request)
   }
   
   public func leave(_ app: CastApp) {
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                  destinationId: app.transportId,
                                  payload: [CastJSONPayloadKeys.type: CastMessageType.close.rawValue])
     
-    client.send(request)
+    send(request)
   }
 }

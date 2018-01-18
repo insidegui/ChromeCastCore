@@ -14,15 +14,11 @@ class DeviceDiscoveryChannel: CastChannel {
   }
   
   func requestDeviceInfo() {
-    let payload: [String: Any] = [
-      CastJSONPayloadKeys.type: CastMessageType.getDeviceInfo.rawValue,
-      ]
-    
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
-                                       payload: payload)
+                                       payload: [CastJSONPayloadKeys.type: CastMessageType.getDeviceInfo.rawValue])
     
-    client.send(request) { result in
+    send(request) { result in
       switch result {
       case .success(let json):
         print(json)

@@ -11,7 +11,7 @@ import SwiftyJSON
 
 public class CastChannel {
   let namespace: String
-  weak var client: CastClient!
+  weak var sink: RequestDispatchable!
   
   init(namespace: String) {
     self.namespace = namespace
@@ -23,5 +23,9 @@ public class CastChannel {
   
   func handleResponse(_ data: Data, sourceId: String) {
     print("\n--Binary response--\n")
+  }
+  
+  func send(_ request: CastRequest, response: CastResponseHandler? = nil) {
+    sink.send(request, response: response)
   }
 }

@@ -103,6 +103,9 @@ extension StatusItemController: CastClientDelegate {
     
     guard status.apps.count > 0, client.connectedApp == nil else { return }
 
+    client.setMuted(true)
+    
+    return
     client.join() { result in
       switch result {
       case .success(let app):

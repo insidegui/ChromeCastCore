@@ -11,12 +11,16 @@ import Result
 import SwiftyJSON
 
 class ReceiverControlChannel: CastChannel {
-  override weak var client: CastClient! {
+  override weak var sink: RequestDispatchable! {
     didSet {
-      if let _ = client {
+      if let _ = sink {
         requestStatus()
       }
     }
+  }
+  
+  private var delegate: ReceiverControlChannelDelegate! {
+    return sink as! ReceiverControlChannelDelegate
   }
   
   init() {
@@ -34,7 +38,7 @@ class ReceiverControlChannel: CastChannel {
     
     switch type {
     case .status:
-      client.channel(self, didReceive: CastStatus(json: json))
+      delegate.channel(self, didReceive: CastStatus(json: json))
       
     default:
       print(rawType)
@@ -47,11 +51,11 @@ class ReceiverControlChannel: CastChannel {
       CastJSONPayloadKeys.appId: apps.map { $0.id }
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
                                        payload: payload)
     
-    client.send(request) { result in
+    send(request) { result in
       switch result {
       case .success(let json):
         completion(Result(value: AppAvailability(json: json)))
@@ -62,12 +66,12 @@ class ReceiverControlChannel: CastChannel {
   }
   
   public func requestStatus(completion: ((Result<CastStatus, CastError>) -> Void)? = nil) {
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
                                        payload: [CastJSONPayloadKeys.type: CastMessageType.statusRequest.rawValue])
     
     if let completion = completion {
-      client.send(request) { result in
+      send(request) { result in
         switch result {
         case .success(let json):
           completion(Result(value: CastStatus(json: json)))
@@ -77,7 +81,7 @@ class ReceiverControlChannel: CastChannel {
         }
       }
     } else {
-      client.send(request)
+      send(request)
     }
   }
   
@@ -87,11 +91,11 @@ class ReceiverControlChannel: CastChannel {
       CastJSONPayloadKeys.appId: appId.rawValue
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
                                        payload: payload)
     
-    client.send(request) { result in
+    send(request) { result in
       switch result {
       case .success(let json):
         guard let app = CastStatus(json: json).apps.first else {
@@ -114,11 +118,11 @@ class ReceiverControlChannel: CastChannel {
       CastJSONPayloadKeys.sessionId: app.sessionId
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
                                        payload: payload)
     
-    client.send(request)
+    send(request)
   }
   
   public func setVolume(_ volume: Float) {
@@ -127,11 +131,11 @@ class ReceiverControlChannel: CastChannel {
       CastJSONPayloadKeys.volume: [CastJSONPayloadKeys.level: volume]
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                  destinationId: CastConstants.receiver,
                                  payload: payload)
     
-    client.send(request)
+    send(request)
   }
   
   public func setMuted(_ isMuted: Bool) {
@@ -140,14 +144,14 @@ class ReceiverControlChannel: CastChannel {
       CastJSONPayloadKeys.volume: [CastJSONPayloadKeys.muted: isMuted]
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                  destinationId: CastConstants.receiver,
                                  payload: payload)
     
-    client.send(request)
+    send(request)
   }
 }
 
-protocol ReceiverControlChannelDelegate {
+protocol ReceiverControlChannelDelegate: RequestDispatchable {
   func channel(_ channel: ReceiverControlChannel, didReceive status: CastStatus)
 }

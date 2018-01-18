@@ -24,9 +24,9 @@ class HeartbeatChannel: CastChannel {
     }
   }
   
-  override weak var client: CastClient! {
+  override weak var sink: RequestDispatchable! {
     didSet {
-      if let _ = client {
+      if let _ = sink {
         startBeating()
       } else {
         timer.invalidate()
@@ -34,14 +34,16 @@ class HeartbeatChannel: CastChannel {
     }
   }
   
+  private var delegate: HeartbeatChannelDelegate {
+    return sink as! HeartbeatChannelDelegate
+  }
+  
   init() {
     super.init(namespace: CastNamespace.heartbeat)
   }
   
   override func handleResponse(_ json: JSON, sourceId: String) {
-    if !client.isConnected {
-      client.isConnected = true
-    }
+    delegate.channelDidConnect(self)
     
     guard let rawType = json["type"].string else { return }
     
@@ -69,26 +71,27 @@ class HeartbeatChannel: CastChannel {
   }
   
   @objc private func sendPing() {
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.transport,
                                        payload: [CastJSONPayloadKeys.type: CastMessageType.ping.rawValue])
     
-    client.send(request)
+    send(request)
   }
   
   private func sendPong(to destinationId: String) {
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                  destinationId: destinationId,
                                  payload: [CastJSONPayloadKeys.type: CastMessageType.pong.rawValue])
     
-    client.send(request)
+    send(request)
   }
   
   @objc private func handleTimeout() {
-    client.channelDidTimeout(self)
+    delegate.channelDidTimeout(self)
   }
 }
 
-protocol HeartbeatChannelDelegate {
+protocol HeartbeatChannelDelegate: class {
+  func channelDidConnect(_ channel: HeartbeatChannel)
   func channelDidTimeout(_ channel: HeartbeatChannel)
 }

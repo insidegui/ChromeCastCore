@@ -31,11 +31,11 @@ class DeviceSetupChannel: CastChannel {
       "data": [:]
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
                                        payload: payload)
     
-    client.send(request) { result in
+    send(request) { result in
       switch result {
       case .success(let json):
         print(json)
@@ -59,11 +59,11 @@ class DeviceSetupChannel: CastChannel {
       "data": [:]
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
                                        payload: payload)
     
-    client.send(request) { result in
+    send(request) { result in
       switch result {
       case .success(let json):
         print(json)
@@ -80,11 +80,11 @@ class DeviceSetupChannel: CastChannel {
       "data": ["app_id": app.id]
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
                                        payload: payload)
     
-    client.send(request) { result in
+    send(request) { result in
       switch result {
       case .success(let json):
         print(json)

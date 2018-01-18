@@ -9,19 +9,22 @@
 import Foundation
 
 class DeviceAuthChannel: CastChannel {
+  typealias CastAuthChallenge = Extensions_Api_CastChannel_AuthChallenge
+  typealias CastAuthMessage = Extensions_Api_CastChannel_DeviceAuthMessage
+  
   init() {
     super.init(namespace: CastNamespace.auth)
   }
   
   public func sendAuthChallenge() throws {
-    let message = Extensions_Api_CastChannel_DeviceAuthMessage.with({ (message) in
-      message.challenge = Extensions_Api_CastChannel_AuthChallenge()
-    })
+    let message = CastAuthMessage.with {
+      $0.challenge = CastAuthChallenge()
+    }
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: CastConstants.receiver,
                                        payload: try message.serializedData())
 
-    client.send(request)
+    send(request)
   }
 }

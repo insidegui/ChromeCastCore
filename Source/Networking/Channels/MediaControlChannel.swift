@@ -11,6 +11,10 @@ import Result
 import SwiftyJSON
 
 class MediaControlChannel: CastChannel {
+  private var delegate: MediaControlChannelDelegate! {
+    return sink as! MediaControlChannelDelegate
+  }
+  
   init() {
     super.init(namespace: CastNamespace.media)
   }
@@ -26,7 +30,7 @@ class MediaControlChannel: CastChannel {
     
     switch type {
     case .mediaStatus:
-      client.channel(self, didReceive: CastMediaStatus(json: json))
+      delegate.channel(self, didReceive: CastMediaStatus(json: json))
       
     default:
       print(rawType)
@@ -39,12 +43,12 @@ class MediaControlChannel: CastChannel {
       CastJSONPayloadKeys.sessionId: app.sessionId
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: app.transportId,
                                        payload: payload)
     
     if let completion = completion {
-      client.send(request) { result in
+      send(request) { result in
         switch result {
         case .success(let json):
           completion(Result(value: CastMediaStatus(json: json)))
@@ -54,7 +58,7 @@ class MediaControlChannel: CastChannel {
         }
       }
     } else {
-      client.send(request)
+      send(request)
     }
   }
   
@@ -78,11 +82,11 @@ class MediaControlChannel: CastChannel {
       CastJSONPayloadKeys.mediaSessionId: mediaSessionId
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                  destinationId: app.transportId,
                                  payload: payload)
     
-    client.send(request)
+    send(request)
   }
   
   private func send(_ message: CastMessageType, for app: CastApp, mediaSessionId: Int) {
@@ -91,11 +95,11 @@ class MediaControlChannel: CastChannel {
       CastJSONPayloadKeys.mediaSessionId: mediaSessionId
     ]
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                  destinationId: app.transportId,
                                  payload: payload)
     
-    client.send(request)
+    send(request)
   }
   
   public func load(media: CastMedia, with app: CastApp, completion: @escaping (Result<CastMediaStatus, CastError>) -> Void) {
@@ -103,11 +107,11 @@ class MediaControlChannel: CastChannel {
     payload[CastJSONPayloadKeys.type] = CastMessageType.load.rawValue
     payload[CastJSONPayloadKeys.sessionId] = app.sessionId
     
-    let request = client.request(withNamespace: namespace,
+    let request = sink.request(withNamespace: namespace,
                                        destinationId: app.transportId,
                                        payload: payload)
 
-    client.send(request) { result in
+    send(request) { result in
       switch result {
       case .success(let json):
         completion(Result(value: CastMediaStatus(json: json)))
@@ -119,6 +123,6 @@ class MediaControlChannel: CastChannel {
   }
 }
 
-protocol MediaControlChannelDelegate {
+protocol MediaControlChannelDelegate: class {
   func channel(_ channel: MediaControlChannel, didReceive mediaStatus: CastMediaStatus)
 }
