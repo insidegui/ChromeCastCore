@@ -65,5 +65,4 @@ public final class CastDevice: NSObject, NSCopying {
   public override var description: String {
     return "CastDevice(id: \(id), name: \(name), hostName:\(hostName), ipAddress:\(ipAddress), port:\(port))"
   }
-  
 }

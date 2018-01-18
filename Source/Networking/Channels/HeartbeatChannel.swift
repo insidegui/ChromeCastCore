@@ -34,8 +34,8 @@ class HeartbeatChannel: CastChannel {
     }
   }
   
-  private var delegate: HeartbeatChannelDelegate {
-    return sink as! HeartbeatChannelDelegate
+  private var delegate: HeartbeatChannelDelegate? {
+    return sink as? HeartbeatChannelDelegate
   }
   
   init() {
@@ -43,7 +43,7 @@ class HeartbeatChannel: CastChannel {
   }
   
   override func handleResponse(_ json: JSON, sourceId: String) {
-    delegate.channelDidConnect(self)
+    delegate?.channelDidConnect(self)
     
     guard let rawType = json["type"].string else { return }
     
@@ -87,7 +87,7 @@ class HeartbeatChannel: CastChannel {
   }
   
   @objc private func handleTimeout() {
-    delegate.channelDidTimeout(self)
+    delegate?.channelDidTimeout(self)
   }
 }
 

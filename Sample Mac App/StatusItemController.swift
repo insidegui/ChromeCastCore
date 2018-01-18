@@ -99,8 +99,6 @@ extension StatusItemController: CastClientDelegate {
   }
   
   func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
-    print(status)
-    
     guard status.apps.count > 0, client.connectedApp == nil else { return }
 
     client.setMuted(true)
@@ -109,7 +107,7 @@ extension StatusItemController: CastClientDelegate {
     client.join() { result in
       switch result {
       case .success(let app):
-        client.setMuted(true)
+        client.setMuted(false)
         
       case .failure(let error):
         print(error)
@@ -122,7 +120,7 @@ extension StatusItemController: CastClientDelegate {
 //    client.stopCurrentApp()
   }
   
-  func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: NSError) {
+  func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: Error?) {
     print(error)
   }
 }

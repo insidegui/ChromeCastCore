@@ -11,8 +11,8 @@ import Result
 import SwiftyJSON
 
 class MediaControlChannel: CastChannel {
-  private var delegate: MediaControlChannelDelegate! {
-    return sink as! MediaControlChannelDelegate
+  private var delegate: MediaControlChannelDelegate? {
+    return sink as? MediaControlChannelDelegate
   }
   
   init() {
@@ -30,7 +30,7 @@ class MediaControlChannel: CastChannel {
     
     switch type {
     case .mediaStatus:
-      delegate.channel(self, didReceive: CastMediaStatus(json: json))
+      delegate?.channel(self, didReceive: CastMediaStatus(json: json))
       
     default:
       print(rawType)

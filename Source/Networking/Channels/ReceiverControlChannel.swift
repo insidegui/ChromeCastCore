@@ -19,8 +19,8 @@ class ReceiverControlChannel: CastChannel {
     }
   }
   
-  private var delegate: ReceiverControlChannelDelegate! {
-    return sink as! ReceiverControlChannelDelegate
+  private var delegate: ReceiverControlChannelDelegate? {
+    return sink as? ReceiverControlChannelDelegate
   }
   
   init() {
@@ -38,7 +38,7 @@ class ReceiverControlChannel: CastChannel {
     
     switch type {
     case .status:
-      delegate.channel(self, didReceive: CastStatus(json: json))
+      delegate?.channel(self, didReceive: CastStatus(json: json))
       
     default:
       print(rawType)

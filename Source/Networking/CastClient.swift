@@ -101,6 +101,8 @@ public final class CastClient: NSObject, RequestDispatchable, Channelable {
     }
   }
   
+  public private(set) var currentMultizoneStatus: CastMultizoneStatus?
+  
   public var statusDidChange: ((CastStatus) -> Void)?
   public var mediaStatusDidChange: ((CastMediaStatus) -> Void)?
   
@@ -237,6 +239,10 @@ public final class CastClient: NSObject, RequestDispatchable, Channelable {
       _ = self.receiverControlChannel
       _ = self.mediaControlChannel
       _ = self.heartbeatChannel
+      
+      if self.device.capabilities.contains(.multizoneGroup) {
+        _ = self.multizoneControlChannel
+      }
     }
   }
   
@@ -258,6 +264,7 @@ public final class CastClient: NSObject, RequestDispatchable, Channelable {
         case .string:
           if let messageData = message.payloadUtf8.data(using: .utf8) {
             let json = JSON(messageData)
+
             channel.handleResponse(json,
                                    sourceId: message.sourceID)
             
@@ -304,6 +311,13 @@ public final class CastClient: NSObject, RequestDispatchable, Channelable {
   
   private lazy var mediaControlChannel: MediaControlChannel = {
     let channel = MediaControlChannel()
+    self.addChannel(channel)
+    
+    return channel
+  }()
+  
+  private lazy var multizoneControlChannel: MultizoneControlChannel = {
+    let channel = MultizoneControlChannel()
     self.addChannel(channel)
     
     return channel
@@ -517,6 +531,24 @@ public final class CastClient: NSObject, RequestDispatchable, Channelable {
     
     receiverControlChannel.setMuted(muted)
   }
+  
+  public func setVolume(_ volume: Float, for device: CastMultizoneDevice) {
+    guard device.capabilities.contains(.multizoneGroup) else {
+      print("Attempted to set zone volume on non-multizone device")
+      return
+    }
+    
+    multizoneControlChannel.setVolume(volume, for: device)
+  }
+  
+  public func setMuted(_ isMuted: Bool, for device: CastMultizoneDevice) {
+    guard device.capabilities.contains(.multizoneGroup) else {
+      print("Attempted to mute zone on non-multizone device")
+      return
+    }
+    
+    multizoneControlChannel.setMuted(isMuted, for: device)
+  }
 }
 
 extension CastClient: StreamDelegate {
@@ -575,5 +607,23 @@ extension CastClient: HeartbeatChannelDelegate {
     currentStatus = nil
     currentMediaStatus = nil
     connectedApp = nil
+  }
+}
+
+extension CastClient: MultizoneControlChannelDelegate {
+  func channel(_ channel: MultizoneControlChannel, added device: CastMultizoneDevice) {
+    
+  }
+  
+  func channel(_ channel: MultizoneControlChannel, updated device: CastMultizoneDevice) {
+    
+  }
+  
+  func channel(_ channel: MultizoneControlChannel, removed deviceId: String) {
+    
+  }
+  
+  func channel(_ channel: MultizoneControlChannel, didReceive status: CastMultizoneStatus) {
+    currentMultizoneStatus = status
   }
 }

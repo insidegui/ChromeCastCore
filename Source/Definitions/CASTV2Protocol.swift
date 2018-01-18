@@ -16,6 +16,7 @@ struct CastNamespace {
   static let media = "urn:x-cast:com.google.cast.media"
   static let discovery = "urn:x-cast:com.google.cast.receiver.discovery"
   static let setup = "urn:x-cast:com.google.cast.setup"
+  static let multizone = "urn:x-cast:com.google.cast.multizone"
 }
 
 enum CastMessageType: String {
@@ -31,6 +32,7 @@ enum CastMessageType: String {
   case play = "PLAY"
   case seek = "SEEK"
   case setVolume = "SET_VOLUME"
+  case setDeviceVolume = "SET_DEVICE_VOLUME"
   case statusRequest = "GET_STATUS"
   case availableApps = "GET_APP_AVAILABILITY"
   case mediaStatus = "MEDIA_STATUS"
@@ -45,20 +47,6 @@ enum CastMessageType: String {
   case deviceRemoved = "DEVICE_REMOVED"
   case invalidRequest = "INVALID_REQUEST"
   case mdxSessionStatus = "mdxSessionStatus"
-}
-
-extension CastMessageType {
-  
-  var needsRequestId: Bool {
-    switch (self) {
-    case .launch, .load, .statusRequest, .getDeviceInfo, .stop:
-      return true
-      
-    default:
-      return true
-    }
-  }
-  
 }
 
 struct CastJSONPayloadKeys {
@@ -95,6 +83,10 @@ struct CastJSONPayloadKeys {
   static let activeTrackIds = "activeTrackIds"
   static let playbackRate = "playbackRate"
   static let playerState = "playerState"
+  static let deviceId = "deviceId"
+  static let device = "device"
+  static let devices = "devices"
+  static let capabilities = "capabilities"
 }
 
 struct CastConstants {
