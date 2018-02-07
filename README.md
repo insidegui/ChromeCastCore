@@ -18,11 +18,11 @@ I have only tested on 10.12, but it should work on 10.11 and even on iOS (with s
 
 To build the framework, you need to clone this repository and its dependencies:
 
-	$ git clone --recursive https://github.com/ChromeCastCore/ChromeCastCore.git && cd ChromeCastCore
+	$ git clone --recursive https://github.com/ChromeCastCore/ChromeCastCore.git
 
-After cloning, run the bootstrap script to build the dependencies:
+After cloning, build the dependencies with Carthage:
 
-	$ ./bootstrap.sh
+	$ carthage update --platform mac
 
 ### Basic usage
 
@@ -36,7 +36,7 @@ var scanner = CastDeviceScanner()
 NotificationCenter.default.addObserver(forName: DeviceScanner.DeviceListDidChange, object: scanner, queue: nil) { [unowned self] _ in
 	// self.scanner.devices contains the list of devices available
 }
-        
+
 scanner.startScanning()
 ```
 
@@ -66,7 +66,7 @@ protocol CastClientDelegate {
     optional func castClient(_ client: CastClient, didConnectTo device: CastDevice)
     optional func castClient(_ client: CastClient, didDisconnectFrom device: CastDevice)
     optional func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: NSError)
-    
+
     optional func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus)
     optional func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus)
 }
@@ -85,7 +85,7 @@ client.launch(appId: .defaultMediaPlayer) { [weak self] error, app in
         } else {
             NSLog("Unknown error launching app")
         }
-        
+
         return
     }
 
@@ -105,12 +105,12 @@ let videoURL = URL(string: "http://devimages.apple.com/iphone/samples/bipbop/bip
 let posterURL = URL(string: "https://i.imgur.com/GPgh0AN.jpg")!
 
 // create a CastMedia object to hold media information
-let media = CastMedia(title: "Test Bars", 
-						url: videoURL, 
-						poster: posterURL, 
-						contentType: "application/vnd.apple.mpegurl", 
-						streamType: CastMediaStreamType.buffered, 
-						autoplay: true, 
+let media = CastMedia(title: "Test Bars",
+						url: videoURL,
+						poster: posterURL,
+						contentType: "application/vnd.apple.mpegurl",
+						streamType: CastMediaStreamType.buffered,
+						autoplay: true,
 						currentTime: 0)
 
 // app is the instance of the app you got from the client after calling launch, or from the status callbacks
@@ -121,10 +121,10 @@ client.load(media: media, with: app) { error, status in
         } else {
             NSLog("Unknown error loading media")
         }
-        
+
         return
     }
-    
+
     // this media has been successfully loaded, status contains the initial status for this media
 	// you can now call requestMediaStatus periodically to get updated media status
 }
