@@ -221,13 +221,22 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CeC-5L-sTU">
+                                <rect key="frame" x="154.5" y="489" width="65" height="30"/>
+                                <state key="normal" title="Test Cast"/>
+                                <connections>
+                                    <action selector="handleTestCast:" destination="VpP-2Z-9yY" eventType="touchUpInside" id="Ryj-sh-Vgn"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="v2i-XG-vAA" firstAttribute="top" secondItem="6cl-Q8-MW8" secondAttribute="top" constant="46" id="3kt-2b-nEQ"/>
+                            <constraint firstItem="CeC-5L-sTU" firstAttribute="centerX" secondItem="6cl-Q8-MW8" secondAttribute="centerX" id="8vj-CP-jMI"/>
                             <constraint firstItem="vJ7-B4-LC1" firstAttribute="top" secondItem="6cl-Q8-MW8" secondAttribute="top" constant="41" id="DKJ-Tr-o4I"/>
                             <constraint firstItem="BdQ-aY-dWJ" firstAttribute="leading" secondItem="6cl-Q8-MW8" secondAttribute="leading" constant="16" id="IeU-MQ-tbq"/>
                             <constraint firstItem="6Gz-zX-Xmn" firstAttribute="centerX" secondItem="6cl-Q8-MW8" secondAttribute="centerX" id="MT6-ng-4Ph"/>
+                            <constraint firstItem="CeC-5L-sTU" firstAttribute="top" secondItem="6Gz-zX-Xmn" secondAttribute="bottom" constant="18.5" id="NZu-H6-kL2"/>
                             <constraint firstItem="kkm-KV-fJb" firstAttribute="leading" secondItem="6cl-Q8-MW8" secondAttribute="trailing" multiplier="1/2" id="O88-l3-TB5"/>
                             <constraint firstItem="BdQ-aY-dWJ" firstAttribute="top" secondItem="6cl-Q8-MW8" secondAttribute="top" constant="89" id="OG2-Oe-Jc6"/>
                             <constraint firstItem="wpk-cx-TzM" firstAttribute="leading" secondItem="6cl-Q8-MW8" secondAttribute="leading" constant="16" id="PAw-Q4-XdG"/>

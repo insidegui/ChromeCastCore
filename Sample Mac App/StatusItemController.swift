@@ -101,13 +101,13 @@ extension StatusItemController: CastClientDelegate {
   func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
     guard status.apps.count > 0, client.connectedApp == nil else { return }
 
-    client.setMuted(true)
+    client.setMuted(false)
     
     return
     client.join() { result in
       switch result {
       case .success(let app):
-        client.setMuted(false)
+        client.requestMediaStatus(for: app)
         
       case .failure(let error):
         print(error)

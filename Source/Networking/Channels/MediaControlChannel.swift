@@ -30,7 +30,9 @@ class MediaControlChannel: CastChannel {
     
     switch type {
     case .mediaStatus:
-      delegate?.channel(self, didReceive: CastMediaStatus(json: json))
+      guard let status = json["status"].array?.first else { return }
+      
+      delegate?.channel(self, didReceive: CastMediaStatus(json: status))
       
     default:
       print(rawType)
@@ -114,7 +116,9 @@ class MediaControlChannel: CastChannel {
     send(request) { result in
       switch result {
       case .success(let json):
-        completion(Result(value: CastMediaStatus(json: json)))
+        guard let status = json["status"].array?.first else { return }
+        
+        completion(Result(value: CastMediaStatus(json: status)))
         
       case .failure(let error):
         completion(Result(error: CastError.load(error.localizedDescription)))

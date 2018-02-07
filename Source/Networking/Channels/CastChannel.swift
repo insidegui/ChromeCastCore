@@ -18,7 +18,7 @@ public class CastChannel {
   }
   
   func handleResponse(_ json: JSON, sourceId: String) {
-    print(json)
+//    print(json)
   }
   
   func handleResponse(_ data: Data, sourceId: String) {

@@ -39,30 +39,28 @@ extension CastMediaStatus {
   
   convenience init(json: JSON) {
     self.init()
-  
-    guard let status = json["status"].array?.first else { fatalError("Malformed MEDIA_STATUS response") }
     
-    if let sessionId = status[CastJSONPayloadKeys.mediaSessionId].int {
+    if let sessionId = json[CastJSONPayloadKeys.mediaSessionId].int {
       self.mediaSessionId = sessionId
     }
     
-    if let playbackRate = status[CastJSONPayloadKeys.playbackRate].int {
+    if let playbackRate = json[CastJSONPayloadKeys.playbackRate].int {
       self.playbackRate = playbackRate
     }
     
-    if let rawState = status[CastJSONPayloadKeys.playerState].string {
+    if let rawState = json[CastJSONPayloadKeys.playerState].string {
       if let state = CastMediaPlayerState(rawValue: rawState) {
         self.playerState = state
       }
     }
     
-    if let currentTime = status[CastJSONPayloadKeys.currentTime].double {
+    if let currentTime = json[CastJSONPayloadKeys.currentTime].double {
       self.currentTime = currentTime
     }
     
-    metadata = status[CastJSONPayloadKeys.media][CastJSONPayloadKeys.metadata]
+    metadata = json[CastJSONPayloadKeys.media][CastJSONPayloadKeys.metadata]
     
-    if let contentID = status[CastJSONPayloadKeys.media][CastJSONPayloadKeys.contentId].string, let data = contentID.data(using: .utf8) {
+    if let contentID = json[CastJSONPayloadKeys.media][CastJSONPayloadKeys.contentId].string, let data = contentID.data(using: .utf8) {
       self.contentID = (try? JSON(data: data))?[CastJSONPayloadKeys.contentId].string ?? contentID
     }
   }
