@@ -8,25 +8,25 @@
 
 import Foundation
 
-public enum CastMediaPlayerState: String {
+@objc public enum CastMediaPlayerState: String {
     case buffering = "BUFFERING"
     case playing = "PLAYING"
     case paused = "PAUSED"
     case stopped = "STOPPED"
 }
 
-public final class CastMediaStatus: NSObject {
+@objc public final class CastMediaStatus: NSObject {
     
-    public var mediaSessionId: Int = 0
-    public var playbackRate: Int = 1
-    public var playerState: CastMediaPlayerState = .buffering
-    public var currentTime: Double = 0
+    @objc public var mediaSessionId: Int = 0
+    @objc public var playbackRate: Int = 1
+    @objc public var playerState: CastMediaPlayerState = .buffering
+    @objc public var currentTime: Double = 0
     
-    public var state: String {
+    @objc public var state: String {
         return playerState.rawValue
     }
     
-    public override var description: String {
+    @objc public override var description: String {
         return "MediaStatus(mediaSessionId: \(mediaSessionId), playbackRate: \(playbackRate), playerState: \(playerState.rawValue), currentTime: \(currentTime))"
     }
     

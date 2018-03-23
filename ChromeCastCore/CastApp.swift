@@ -8,19 +8,19 @@
 
 import Foundation
 
-public enum CastAppIdentifier: String {
+@objc public enum CastAppIdentifier: String {
     case defaultMediaPlayer = "CC1AD845"
     case youTube = "YouTube"
 }
 
-public final class CastApp: NSObject {
+@objc public final class CastApp: NSObject {
     
-    public var id: String = ""
-    public var displayName: String = ""
-    public var isIdleScreen: Bool = false
-    public var sessionId: String = ""
-    public var statusText: String = ""
-    public var transportId: String = ""
+    @objc public var id: String = ""
+    @objc public var displayName: String = ""
+    @objc public var isIdleScreen: Bool = false
+    @objc public var sessionId: String = ""
+    @objc public var statusText: String = ""
+    @objc public var transportId: String = ""
     
 }
 

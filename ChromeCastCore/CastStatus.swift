@@ -8,13 +8,13 @@
 
 import Foundation
 
-public final class CastStatus: NSObject {
+@objc public final class CastStatus: NSObject {
     
-    public var volume: Double = 0.976
-    public var muted: Bool = false
-    public var apps: [CastApp] = []
+    @objc public var volume: Double = 0.976
+    @objc public var muted: Bool = false
+    @objc public var apps: [CastApp] = []
     
-    public override var description: String {
+    @objc public override var description: String {
         return "CastStatus(volume: \(volume), muted: \(muted), apps: \(apps))"
     }
     
