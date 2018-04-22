@@ -9,10 +9,25 @@
 import Foundation
 
 public enum CastMediaPlayerState: String, Codable {
+    case idle = "IDLE"
     case buffering = "BUFFERING"
     case playing = "PLAYING"
     case paused = "PAUSED"
     case stopped = "STOPPED"
+}
+
+final class CastMediaStatusPayload: NSObject, Codable {
+
+    var type: CastMessageType = CastMessageType.mediaStatus
+    var requestId: Int?
+    var mediaStatus: [CastMediaStatus]?
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case requestId
+        case mediaStatus = "status"
+    }
+
 }
 
 public final class CastMediaStatus: NSObject, Codable {

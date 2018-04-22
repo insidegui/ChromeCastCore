@@ -9,7 +9,7 @@
 import Cocoa
 import ChromeCastCore
 
-class ViewController: NSViewController {
+class ViewController: NSViewController, CastClientDelegate {
 
     @IBOutlet weak var mediaField: NSTextField!
 
@@ -73,8 +73,50 @@ class ViewController: NSViewController {
         updateMediaURL()
     }
 
-    @IBAction func cast(_ sender: NSButton) {
+    private var client: CastClient?
 
+    @IBAction func cast(_ sender: NSButton) {
+        guard let device = selectedDevice else { return }
+
+        client = CastClient(device: device)
+        client?.delegate = self
+        client?.connect()
+    }
+
+    private func loadMedia() {
+        guard let url = mediaURL else { return }
+        guard let poster = URL(string: "https://devimages-cdn.apple.com/wwdc-services/images/7/1671/1671_wide_250x141_2x.jpg") else { return }
+
+        let media = CastMedia(
+            title: "Test",
+            url: url,
+            poster: poster,
+            contentType: "application/vnd.apple.mpegurl",
+            streamType: .buffered,
+            autoplay: true,
+            currentTime: 0
+        )
+
+        client?.launch(appId: .defaultMediaPlayer) { [weak self] error, app in
+            if let error = error {
+                self?.consoleLog("Failed to launch media player: \(String(describing: error))")
+                return
+            }
+
+            guard let app = app else {
+                self?.consoleLog("No error, but app was nil. What?!")
+                return
+            }
+
+            self?.client?.load(media: media, with: app) { error, mediaStatus in
+                if let error = error {
+                    self?.consoleLog("Failed to load media with default media player: \(String(describing: error))")
+                    return
+                } else {
+                    self?.consoleLog("Media loaded")
+                }
+            }
+        }
     }
 
     override func viewDidAppear() {
@@ -92,7 +134,10 @@ class ViewController: NSViewController {
     }()
 
     private func consoleLog(_ msg: String) {
-        consoleView.textStorage?.append(NSAttributedString(string: msg, attributes: consoleAttributes))
+        let attributedMessage = NSAttributedString(string: msg + "\n", attributes: consoleAttributes)
+
+        consoleView.textStorage?.append(attributedMessage)
+
         consoleView.scrollToEndOfDocument(nil)
     }
 
@@ -102,6 +147,32 @@ class ViewController: NSViewController {
         }
     }
 
+    // MARK: - CastClientDelegate
+
+    @objc func castClient(_ client: CastClient, willConnectTo device: CastDevice) {
+        consoleLog("Will connect to \(device)")
+    }
+
+    @objc func castClient(_ client: CastClient, didConnectTo device: CastDevice) {
+        consoleLog("Now connected to \(device)")
+
+        loadMedia()
+    }
+
+    @objc func castClient(_ client: CastClient, didDisconnectFrom device: CastDevice) {
+        consoleLog("! Disconnected from \(device)")
+    }
+
+    @objc func castClient(_ client: CastClient, connectionTo device: CastDevice, didFailWith error: NSError) {
+        consoleLog("! Connection to \(device.name) failed with error \(String(describing: error))")
+    }
+
+    @objc func castClient(_ client: CastClient, deviceStatusDidChange status: CastStatus) {
+        consoleLog("Device status changed:\n\(status)")
+    }
+
+    @objc func castClient(_ client: CastClient, mediaStatusDidChange status: CastMediaStatus) {
+        consoleLog("Media status changed:\n\(status)")
+    }
 
 }
-

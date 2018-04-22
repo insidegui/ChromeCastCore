@@ -30,5 +30,16 @@ public final class CastApp: NSObject, Codable {
         case statusText
         case transportId
     }
+
+    public override var description: String {
+        return """
+               CastApp(id: \(id),
+                       displayName:\(displayName),
+                       isIdleScreen: \(isIdleScreen),
+                       sessionId:\(sessionId),
+                       statusText:\(statusText),
+                       transportId:\(transportId))
+               """
+    }
     
 }

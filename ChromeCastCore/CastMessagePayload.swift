@@ -8,14 +8,12 @@
 
 import Foundation
 
-final class CastMessagePayload: NSObject, Codable {
+class CastMessagePayload: NSObject, Codable {
     var type: CastMessageType = CastMessageType.ping
-    var requestId: String = ""
-    var mediaStatus: [CastMediaStatus]?
+    var requestId: Int?
 
     enum CodingKeys: String, CodingKey {
         case type
         case requestId
-        case mediaStatus = "status"
     }
 }

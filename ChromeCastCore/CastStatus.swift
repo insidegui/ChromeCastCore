@@ -8,19 +8,47 @@
 
 import Foundation
 
+public final class CastVolume: NSObject, Codable {
+
+    public var level: Double = 0
+    public var muted: Bool = false
+
+    public init(level: Double = 1, muted: Bool = false) {
+        self.level = level
+        self.muted = muted
+    }
+
+}
+
+final class CastStatusPayload: NSObject, Codable {
+
+    var type: CastMessageType = CastMessageType.status
+    var requestId: Int?
+    var status: CastStatus?
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case requestId
+        case status
+    }
+
+}
+
 public final class CastStatus: NSObject, Codable {
     
-    public var volume: Double = 0.976
-    public var muted: Bool = false
+    public var volume: CastVolume = CastVolume()
     public var apps: [CastApp] = []
     
     public override var description: String {
-        return "CastStatus(volume: \(volume), muted: \(muted), apps: \(apps))"
+        return """
+               CastStatus(volume: \(volume.level),
+                          muted: \(volume.muted),
+                          apps: \(apps))
+               """
     }
 
     public enum CodingKeys: String, CodingKey {
-        case volume = "volume"
-        case muted = "muted"
+        case volume
         case apps = "applications"
     }
     

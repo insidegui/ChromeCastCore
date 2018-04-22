@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftProtobuf
+import os.log
 
 public typealias CastMessage = Extensions_Api_CastChannel_CastMessage
 
@@ -49,7 +50,9 @@ final class CastRequest: NSObject {
 }
 
 public final class CastClient: NSObject {
-    
+
+    private let log = OSLog(subsystem: "ChromeCastCore", category: "CastClient")
+
     public let device: CastDevice
     public weak var delegate: CastClientDelegate?
     
@@ -206,8 +209,6 @@ public final class CastClient: NSObject {
             let message = try connectMessage()
             
             try write(data: message)
-            
-//            NSLog("CONNECT")
             
             DispatchQueue.main.async {
                 self.startBeating(id: CastConstants.receiverName)
@@ -387,6 +388,8 @@ public final class CastClient: NSObject {
         let request = CastRequest(id: nextRequestId(), namespace: .receiver, destinationId: CastConstants.receiverName, payload: payload)
         
         send(request: request) { [weak self] (error, json) in
+            guard let `self` = self else { return }
+
             guard error == nil, let json = json else {
                 if let error = error {
                     completion(CastError.launch(error.localizedDescription), nil)
@@ -398,18 +401,21 @@ public final class CastClient: NSObject {
             }
 
             do {
-                let status = try JSONDecoder().decode(CastStatus.self, from: json)
+                let payload = try JSONDecoder().decode(CastStatusPayload.self, from: json)
 
-                guard let app = status.apps.first else {
+                guard let app = payload.status?.apps.first else {
                     completion(CastError.launch("Unable to get launched app instance"), nil)
                     return
                 }
 
-                self?.connect(to: app)
+                self.connect(to: app)
                 completion(nil, app)
             } catch {
-                // TODO: os_log error
-                completion(CastError.write("Failed to decode response payload\n\(String(describing: error))"), nil)
+                let errorMessage = "Failed to decode response payload\n\(String(describing: error))"
+
+                os_log("%{public}@", log: self.log, type: .error, errorMessage)
+
+                completion(.write(errorMessage), nil)
             }
         }
     }
@@ -465,12 +471,15 @@ public final class CastClient: NSObject {
             }
 
             do {
-                let payload = try JSONDecoder().decode(CastMessagePayload.self, from: json)
+                let payload = try JSONDecoder().decode(CastMediaStatusPayload.self, from: json)
 
                 completion(nil, payload.mediaStatus?.first)
             } catch {
-                // TODO: os_log error
-                completion(CastError.write("Failed to decode cast message payload:\n\(String(describing: error))"), nil)
+                let errorMessage = "Failed to decode cast message payload:\n\(String(describing: error))"
+
+                os_log("%{public}@", log: self.log, type: .error, errorMessage)
+
+                completion(.write(errorMessage), nil)
             }
         }
     }
@@ -497,7 +506,9 @@ public final class CastClient: NSObject {
         
         let request = CastRequest(id: nextRequestId(), namespace: .media, destinationId: app.transportId, payload: payload)
 
-        send(request: request) { error, json in
+        send(request: request) { [weak self] error, json in
+            guard let `self` = self else { return }
+
             guard error == nil, let json = json else {
                 if let error = error {
                     completion?(CastError.load(error.localizedDescription), nil)
@@ -509,12 +520,15 @@ public final class CastClient: NSObject {
             }
             
             do {
-                let payload = try JSONDecoder().decode(CastMessagePayload.self, from: json)
+                let payload = try JSONDecoder().decode(CastMediaStatusPayload.self, from: json)
 
                 completion?(nil, payload.mediaStatus?.first)
             } catch {
-                // TODO: os_log error
-                completion?(CastError.write("Failed to decode cast message payload:\n\(String(describing: error))"), nil)
+                let errorMessage = "Failed to decode cast message payload:\n\(String(describing: error))"
+
+                os_log("%{public}@", log: self.log, type: .error, errorMessage)
+
+                completion?(.write(errorMessage), nil)
             }
         }
     }
@@ -538,40 +552,67 @@ public final class CastClient: NSObject {
         guard let data = json else { return }
         guard data.count > 0 else { return }
 
-        guard let payload = try? JSONDecoder().decode(CastMessagePayload.self, from: data) else { return }
-
-        if let requestId = Int(payload.requestId) {
-//            NSLog("Received response for previously sent request \(requestId), calling handler")
-            callResponseHandler(for: requestId, with: nil, response: data)
+        #if DEBUG
+        if let jsonString = String(data: data, encoding: .utf8) {
+            os_log("JSON payload:\n%{public}@", log: log, type: .debug, jsonString)
+        } else {
+            os_log("JSON payload was not a valid UTF-8 string", log: log, type: .error)
         }
-        
-        switch payload.type {
-        case .pong:
-            // connection confirmed with pong
-            if !self.isConnected {
-                self.isConnected = true
+        #endif
+
+        do {
+            let payload = try JSONDecoder().decode(CastMessagePayload.self, from: data)
+
+            if let requestId = payload.requestId {
+                os_log("Got response for request #%{public}d", log: log, type: .info, requestId)
+
+                callResponseHandler(for: requestId, with: nil, response: data)
             }
-//            NSLog("PONG from \(originalMessage.sourceId)")
-        case .close:
-            if originalMessage.sourceID == CastConstants.receiverName {
-                // device disconnected
-                if self.isConnected {
-                    self.isConnected = false
+
+            switch payload.type {
+            case .pong:
+                // connection confirmed with pong
+                if !self.isConnected {
+                    os_log("First PONG is here, we're now connected", log: log, type: .debug)
+                    self.isConnected = true
                 }
+            case .close:
+                if originalMessage.sourceID == CastConstants.receiverName {
+                    // device disconnected
+                    if self.isConnected {
+                        self.isConnected = false
+                    }
+                }
+            case .status:
+                do {
+                    let payload = try JSONDecoder().decode(CastStatusPayload.self, from: data)
+
+                    self.currentStatus = payload.status
+
+                    os_log("Current device status:\n%{public}@", log: log, type: .info, String(describing: payload.status))
+                } catch {
+                    let errorMessage = "Failed to decode cast device status payload:\n\(String(describing: error))"
+
+                    os_log("%{public}@", log: self.log, type: .error, errorMessage)
+                }
+            case .mediaStatus:
+                do {
+                    let payload = try JSONDecoder().decode(CastMediaStatusPayload.self, from: data)
+
+                    self.currentMediaStatus = payload.mediaStatus?.first
+
+                    os_log("Current media status:\n%{public}@", log: log, type: .info, String(describing: self.currentMediaStatus))
+                } catch {
+                    let errorMessage = "Failed to decode cast media status payload:\n\(String(describing: error))"
+
+                    os_log("%{public}@", log: self.log, type: .error, errorMessage)
+                }
+            default: break
             }
-        case .status:
-            do {
-                self.currentStatus = try JSONDecoder().decode(CastStatus.self, from: data)
-            } catch {
-                // TODO: os_log error
+        } catch {
+            DispatchQueue.main.async {
+                self.delegate?.castClient?(self, connectionTo: self.device, didFailWith: error as NSError)
             }
-        case .mediaStatus:
-            if let mediaStatus = payload.mediaStatus?.first {
-                self.currentMediaStatus = mediaStatus
-            } else {
-                // TODO: os_log error
-            }
-        default: break
         }
     }
     
