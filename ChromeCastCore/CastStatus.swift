@@ -36,7 +36,7 @@ extension CastStatus {
         }
         
         if let apps = status[CastJSONPayloadKeys.applications].array {
-            self.apps = apps.flatMap(CastApp.init)
+            self.apps = apps.compactMap(CastApp.init)
         }
     }
     
