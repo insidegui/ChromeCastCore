@@ -15,7 +15,7 @@ enum CastNamespace: String {
     case media = "urn:x-cast:com.google.cast.media"
 }
 
-enum CastMessageType: String {
+enum CastMessageType: String, Codable {
     case ping = "PING"
     case pong = "PONG"
     case connect = "CONNECT"

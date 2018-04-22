@@ -8,54 +8,33 @@
 
 import Foundation
 
-public enum CastMediaPlayerState: String {
+public enum CastMediaPlayerState: String, Codable {
     case buffering = "BUFFERING"
     case playing = "PLAYING"
     case paused = "PAUSED"
     case stopped = "STOPPED"
 }
 
-public final class CastMediaStatus: NSObject {
+public final class CastMediaStatus: NSObject, Codable {
     
     public var mediaSessionId: Int = 0
     public var playbackRate: Int = 1
-    public var playerState: CastMediaPlayerState = .buffering
+    public var playerState: CastMediaPlayerState? = .buffering
     public var currentTime: Double = 0
     
-    public var state: String {
-        return playerState.rawValue
+    public var state: String? {
+        return playerState?.rawValue
     }
     
     public override var description: String {
-        return "MediaStatus(mediaSessionId: \(mediaSessionId), playbackRate: \(playbackRate), playerState: \(playerState.rawValue), currentTime: \(currentTime))"
+        return "MediaStatus(mediaSessionId: \(mediaSessionId), playbackRate: \(playbackRate), playerState: \(String(describing: playerState)), currentTime: \(currentTime))"
     }
-    
-}
 
-extension CastMediaStatus {
-    
-    convenience init(json: JSON) {
-        self.init()
-        
-        guard let status = json.array?.first else { return }
-        
-        if let sessionId = status["mediaSessionId"].int {
-            self.mediaSessionId = sessionId
-        }
-        
-        if let playbackRate = status["playbackRate"].int {
-            self.playbackRate = playbackRate
-        }
-        
-        if let rawState = status["playerState"].string {
-            if let state = CastMediaPlayerState(rawValue: rawState) {
-                self.playerState = state
-            }
-        }
-        
-        if let currentTime = status["currentTime"].double {
-            self.currentTime = currentTime
-        }
+    public enum CodingKeys: String, CodingKey {
+        case mediaSessionId
+        case playbackRate
+        case playerState
+        case currentTime
     }
     
 }

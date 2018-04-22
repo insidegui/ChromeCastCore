@@ -140,8 +140,8 @@ public final class CastClient: NSObject {
                 
                 DispatchQueue.main.async { self.delegate?.castClient?(self, willConnectTo: self.device) }
                 
-                CFReadStreamSetProperty(readStreamRetained, CFStreamPropertyKey(kCFStreamPropertySSLSettings), settings as CFTypeRef!)
-                CFWriteStreamSetProperty(writeStreamRetained, CFStreamPropertyKey(kCFStreamPropertySSLSettings), settings as CFTypeRef!)
+                CFReadStreamSetProperty(readStreamRetained, CFStreamPropertyKey(kCFStreamPropertySSLSettings), settings as CFTypeRef)
+                CFWriteStreamSetProperty(writeStreamRetained, CFStreamPropertyKey(kCFStreamPropertySSLSettings), settings as CFTypeRef)
                 
                 self.inputStream = readStreamRetained
                 self.outputStream = writeStreamRetained
@@ -353,7 +353,7 @@ public final class CastClient: NSObject {
     
     // MARK - Request response
     
-    private typealias CastResponseHandler = (CastError?, JSON?) -> Void
+    private typealias CastResponseHandler = (CastError?, Data?) -> Void
     
     private var responseHandlers = [Int: CastResponseHandler]()
     
@@ -369,7 +369,7 @@ public final class CastClient: NSObject {
         }
     }
     
-    private func callResponseHandler(for requestId: Int, with error: CastError?, response: JSON?) {
+    private func callResponseHandler(for requestId: Int, with error: CastError?, response: Data?) {
         DispatchQueue.main.async {
             self.responseHandlers[requestId]?(error, response)
             self.responseHandlers[requestId] = nil
@@ -396,16 +396,21 @@ public final class CastClient: NSObject {
                 
                 return
             }
-            
-            let status = CastStatus(json: json)
-            
-            guard let app = status.apps.first else {
-                completion(CastError.launch("Unable to get launched app instance"), nil)
-                return
+
+            do {
+                let status = try JSONDecoder().decode(CastStatus.self, from: json)
+
+                guard let app = status.apps.first else {
+                    completion(CastError.launch("Unable to get launched app instance"), nil)
+                    return
+                }
+
+                self?.connect(to: app)
+                completion(nil, app)
+            } catch {
+                // TODO: os_log error
+                completion(CastError.write("Failed to decode response payload\n\(String(describing: error))"), nil)
             }
-            
-            self?.connect(to: app)
-            completion(nil, app)
         }
     }
     
@@ -458,9 +463,15 @@ public final class CastClient: NSObject {
                 
                 return
             }
-            
-            let mediaStatus = CastMediaStatus(json: json)
-            completion(nil, mediaStatus)
+
+            do {
+                let payload = try JSONDecoder().decode(CastMessagePayload.self, from: json)
+
+                completion(nil, payload.mediaStatus?.first)
+            } catch {
+                // TODO: os_log error
+                completion(CastError.write("Failed to decode cast message payload:\n\(String(describing: error))"), nil)
+            }
         }
     }
     
@@ -485,6 +496,7 @@ public final class CastClient: NSObject {
         ]
         
         let request = CastRequest(id: nextRequestId(), namespace: .media, destinationId: app.transportId, payload: payload)
+
         send(request: request) { error, json in
             guard error == nil, let json = json else {
                 if let error = error {
@@ -496,8 +508,14 @@ public final class CastClient: NSObject {
                 return
             }
             
-            let mediaStatus = CastMediaStatus(json: json)
-            completion?(nil, mediaStatus)
+            do {
+                let payload = try JSONDecoder().decode(CastMessagePayload.self, from: json)
+
+                completion?(nil, payload.mediaStatus?.first)
+            } catch {
+                // TODO: os_log error
+                completion?(CastError.write("Failed to decode cast message payload:\n\(String(describing: error))"), nil)
+            }
         }
     }
     
@@ -519,19 +537,15 @@ public final class CastClient: NSObject {
     private func handleJSONMessage(with json: Data?, originalMessage: CastMessage) {
         guard let data = json else { return }
         guard data.count > 0 else { return }
-        
-        let json = JSON(data: data)
-        
-        if let requestId = json[CastJSONPayloadKeys.requestId].int {
+
+        guard let payload = try? JSONDecoder().decode(CastMessagePayload.self, from: data) else { return }
+
+        if let requestId = Int(payload.requestId) {
 //            NSLog("Received response for previously sent request \(requestId), calling handler")
-            callResponseHandler(for: requestId, with: nil, response: json)
+            callResponseHandler(for: requestId, with: nil, response: data)
         }
         
-        guard let rawType = json["type"].string else { return }
-        
-        guard let type = CastMessageType(rawValue: rawType) else { return }
-        
-        switch type {
+        switch payload.type {
         case .pong:
             // connection confirmed with pong
             if !self.isConnected {
@@ -546,9 +560,17 @@ public final class CastClient: NSObject {
                 }
             }
         case .status:
-            self.currentStatus = CastStatus(json: json)
+            do {
+                self.currentStatus = try JSONDecoder().decode(CastStatus.self, from: data)
+            } catch {
+                // TODO: os_log error
+            }
         case .mediaStatus:
-            self.currentMediaStatus = CastMediaStatus(json: json["status"])
+            if let mediaStatus = payload.mediaStatus?.first {
+                self.currentMediaStatus = mediaStatus
+            } else {
+                // TODO: os_log error
+            }
         default: break
         }
     }
