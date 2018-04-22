@@ -1,28 +1,16 @@
-If you want to support my open source projects financially, you can do so by purchasing a copy of [BrowserFreedom](https://getbrowserfreedom.com) or [Mediunic](https://itunes.apple.com/app/mediunic-medium-client/id1088945121?mt=12) 😁
-
 ## ChromeCastCore: An open source implementation of the Google Cast SDK for macOS
 
 This framework implements the Google Cast APIs so they can be used in macOS apps. Google provides an official SDK but it is only for iOS and closed source.
 
-### 🔴 Project status: experimental
+### 🐉 Here be dragons
 
-This project is currently on its infancy, I have only implemented the features I needed to support ChromeCast streaming on [Apple Events](https://github.com/insidegui/AppleEvents), but I plan on supporting more stuff in the future. The code is also not very well organized, needs some refactoring =]
+This repository exists as a dependency for my [Apple Events](https://github.com/insidegui/AppleEvents) and [WWDC](/insidegui/WWDC) apps.
+
+**Any external contribution that's outside the scope of the project  requires changes to the the apps mentioned above will not be accepted.**
 
 ### OS Support
 
 I have only tested on 10.12, but it should work on 10.11 and even on iOS (with some minor changes).
-
-### Building
-
-**Important: you need automake, libtool and protobuf on your system to build this project, the easiest way to install them is by using [Homebrew](http://brew.sh).**
-
-To build the framework, you need to clone this repository and its dependencies:
-
-	$ git clone --recursive https://github.com/ChromeCastCore/ChromeCastCore.git && cd ChromeCastCore
-
-After cloning, run the bootstrap script to build the dependencies:
-
-	$ ./bootstrap.sh
 
 ### Basic usage
 
