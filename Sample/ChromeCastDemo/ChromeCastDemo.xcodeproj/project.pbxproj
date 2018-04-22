@@ -1,0 +1,422 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DDBA0D57208CD1250075670F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBA0D56208CD1250075670F /* AppDelegate.swift */; };
+		DDBA0D59208CD1250075670F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBA0D58208CD1250075670F /* ViewController.swift */; };
+		DDBA0D5B208CD1270075670F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDBA0D5A208CD1270075670F /* Assets.xcassets */; };
+		DDBA0D5E208CD1270075670F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DDBA0D5C208CD1270075670F /* Main.storyboard */; };
+		DDBA0D6C208CD13C0075670F /* ChromeCastCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDBA0D6B208CD1320075670F /* ChromeCastCore.framework */; };
+		DDBA0D6D208CD13C0075670F /* ChromeCastCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DDBA0D6B208CD1320075670F /* ChromeCastCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DDBA0D6A208CD1320075670F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DDBA0D66208CD1320075670F /* ChromeCastCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DD674A381DB7E83500E1FC24;
+			remoteInfo = ChromeCastCore;
+		};
+		DDBA0D6E208CD13C0075670F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DDBA0D66208CD1320075670F /* ChromeCastCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DD674A371DB7E83400E1FC24;
+			remoteInfo = ChromeCastCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DDBA0D70208CD13C0075670F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DDBA0D6D208CD13C0075670F /* ChromeCastCore.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		DDBA0D53208CD1250075670F /* ChromeCastDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChromeCastDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDBA0D56208CD1250075670F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		DDBA0D58208CD1250075670F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		DDBA0D5A208CD1270075670F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DDBA0D5D208CD1270075670F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		DDBA0D5F208CD1270075670F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DDBA0D66208CD1320075670F /* ChromeCastCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ChromeCastCore.xcodeproj; path = ../../ChromeCastCore.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DDBA0D50208CD1250075670F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DDBA0D6C208CD13C0075670F /* ChromeCastCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DDBA0D4A208CD1250075670F = {
+			isa = PBXGroup;
+			children = (
+				DDBA0D66208CD1320075670F /* ChromeCastCore.xcodeproj */,
+				DDBA0D55208CD1250075670F /* ChromeCastDemo */,
+				DDBA0D54208CD1250075670F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DDBA0D54208CD1250075670F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DDBA0D53208CD1250075670F /* ChromeCastDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DDBA0D55208CD1250075670F /* ChromeCastDemo */ = {
+			isa = PBXGroup;
+			children = (
+				DDBA0D56208CD1250075670F /* AppDelegate.swift */,
+				DDBA0D58208CD1250075670F /* ViewController.swift */,
+				DDBA0D5A208CD1270075670F /* Assets.xcassets */,
+				DDBA0D5C208CD1270075670F /* Main.storyboard */,
+				DDBA0D5F208CD1270075670F /* Info.plist */,
+			);
+			path = ChromeCastDemo;
+			sourceTree = "<group>";
+		};
+		DDBA0D67208CD1320075670F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DDBA0D6B208CD1320075670F /* ChromeCastCore.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DDBA0D52208CD1250075670F /* ChromeCastDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DDBA0D63208CD1270075670F /* Build configuration list for PBXNativeTarget "ChromeCastDemo" */;
+			buildPhases = (
+				DDBA0D4F208CD1250075670F /* Sources */,
+				DDBA0D50208CD1250075670F /* Frameworks */,
+				DDBA0D51208CD1250075670F /* Resources */,
+				DDBA0D70208CD13C0075670F /* Embed Frameworks */,
+				DDBA0D71208CD1530075670F /* Embed Protobuf */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DDBA0D6F208CD13C0075670F /* PBXTargetDependency */,
+			);
+			name = ChromeCastDemo;
+			productName = ChromeCastDemo;
+			productReference = DDBA0D53208CD1250075670F /* ChromeCastDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DDBA0D4B208CD1250075670F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0930;
+				LastUpgradeCheck = 0930;
+				ORGANIZATIONNAME = "Guilherme Rambo";
+				TargetAttributes = {
+					DDBA0D52208CD1250075670F = {
+						CreatedOnToolsVersion = 9.3;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = DDBA0D4E208CD1250075670F /* Build configuration list for PBXProject "ChromeCastDemo" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DDBA0D4A208CD1250075670F;
+			productRefGroup = DDBA0D54208CD1250075670F /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = DDBA0D67208CD1320075670F /* Products */;
+					ProjectRef = DDBA0D66208CD1320075670F /* ChromeCastCore.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				DDBA0D52208CD1250075670F /* ChromeCastDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		DDBA0D6B208CD1320075670F /* ChromeCastCore.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ChromeCastCore.framework;
+			remoteRef = DDBA0D6A208CD1320075670F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DDBA0D51208CD1250075670F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DDBA0D5B208CD1270075670F /* Assets.xcassets in Resources */,
+				DDBA0D5E208CD1270075670F /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DDBA0D71208CD1530075670F /* Embed Protobuf */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../../Carthage/Build/Mac/SwiftProtobuf.framework",
+			);
+			name = "Embed Protobuf";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DDBA0D4F208CD1250075670F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DDBA0D59208CD1250075670F /* ViewController.swift in Sources */,
+				DDBA0D57208CD1250075670F /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DDBA0D6F208CD13C0075670F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ChromeCastCore;
+			targetProxy = DDBA0D6E208CD13C0075670F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		DDBA0D5C208CD1270075670F /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DDBA0D5D208CD1270075670F /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DDBA0D61208CD1270075670F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		DDBA0D62208CD1270075670F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		DDBA0D64208CD1270075670F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 8C7439RJLG;
+				INFOPLIST_FILE = ChromeCastDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = br.com.guilhermerambo.ChromeCastDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		DDBA0D65208CD1270075670F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 8C7439RJLG;
+				INFOPLIST_FILE = ChromeCastDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = br.com.guilhermerambo.ChromeCastDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DDBA0D4E208CD1250075670F /* Build configuration list for PBXProject "ChromeCastDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DDBA0D61208CD1270075670F /* Debug */,
+				DDBA0D62208CD1270075670F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DDBA0D63208CD1270075670F /* Build configuration list for PBXNativeTarget "ChromeCastDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DDBA0D64208CD1270075670F /* Debug */,
+				DDBA0D65208CD1270075670F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DDBA0D4B208CD1250075670F /* Project object */;
+}
