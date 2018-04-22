@@ -6,7 +6,7 @@ This framework implements the Google Cast APIs so they can be used in macOS apps
 
 This repository exists as a dependency for my [Apple Events](https://github.com/insidegui/AppleEvents) and [WWDC](/insidegui/WWDC) apps.
 
-**Any external contribution that's outside the scope of the project  requires changes to the the apps mentioned above will not be accepted.**
+**Any external contribution that's outside the scope of the project and/or requires changes to the the apps mentioned above will not be accepted.**
 
 ### OS Support
 
