@@ -82,6 +82,14 @@ enum ProtobufUnittest_ForeignEnumLite: SwiftProtobuf.Enum {
 
 }
 
+#if swift(>=4.2)
+
+extension ProtobufUnittest_ForeignEnumLite: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 enum ProtobufUnittest_V1EnumLite: SwiftProtobuf.Enum {
   typealias RawValue = Int
   case v1First // = 1
@@ -104,6 +112,14 @@ enum ProtobufUnittest_V1EnumLite: SwiftProtobuf.Enum {
   }
 
 }
+
+#if swift(>=4.2)
+
+extension ProtobufUnittest_V1EnumLite: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 enum ProtobufUnittest_V2EnumLite: SwiftProtobuf.Enum {
   typealias RawValue = Int
@@ -130,6 +146,14 @@ enum ProtobufUnittest_V2EnumLite: SwiftProtobuf.Enum {
   }
 
 }
+
+#if swift(>=4.2)
+
+extension ProtobufUnittest_V2EnumLite: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 /// Same as TestAllTypes but with the lite runtime.
 struct ProtobufUnittest_TestAllTypesLite {
@@ -746,6 +770,7 @@ struct ProtobufUnittest_TestAllTypesLite {
     case oneofBytes(Data)
     case oneofLazyNestedMessage(ProtobufUnittest_TestAllTypesLite.NestedMessage)
 
+  #if !swift(>=4.1)
     static func ==(lhs: ProtobufUnittest_TestAllTypesLite.OneOf_OneofField, rhs: ProtobufUnittest_TestAllTypesLite.OneOf_OneofField) -> Bool {
       switch (lhs, rhs) {
       case (.oneofUint32(let l), .oneofUint32(let r)): return l == r
@@ -756,6 +781,7 @@ struct ProtobufUnittest_TestAllTypesLite {
       default: return false
       }
     }
+  #endif
   }
 
   enum NestedEnum: SwiftProtobuf.Enum {
@@ -864,6 +890,14 @@ struct ProtobufUnittest_TestAllTypesLite {
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension ProtobufUnittest_TestAllTypesLite.NestedEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct ProtobufUnittest_ForeignMessageLite {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1397,6 +1431,7 @@ struct ProtobufUnittest_TestHugeFieldNumbersLite: SwiftProtobuf.ExtensibleMessag
     case oneofString(String)
     case oneofBytes(Data)
 
+  #if !swift(>=4.1)
     static func ==(lhs: ProtobufUnittest_TestHugeFieldNumbersLite.OneOf_OneofField, rhs: ProtobufUnittest_TestHugeFieldNumbersLite.OneOf_OneofField) -> Bool {
       switch (lhs, rhs) {
       case (.oneofUint32(let l), .oneofUint32(let r)): return l == r
@@ -1406,6 +1441,7 @@ struct ProtobufUnittest_TestHugeFieldNumbersLite: SwiftProtobuf.ExtensibleMessag
       default: return false
       }
     }
+  #endif
   }
 
   struct OptionalGroup {
@@ -1530,6 +1566,7 @@ struct ProtobufUnittest_TestOneofParsingLite {
     case oneofBytesStringPiece(Data)
     case oneofEnum(ProtobufUnittest_V2EnumLite)
 
+  #if !swift(>=4.1)
     static func ==(lhs: ProtobufUnittest_TestOneofParsingLite.OneOf_OneofField, rhs: ProtobufUnittest_TestOneofParsingLite.OneOf_OneofField) -> Bool {
       switch (lhs, rhs) {
       case (.oneofInt32(let l), .oneofInt32(let r)): return l == r
@@ -1544,11 +1581,63 @@ struct ProtobufUnittest_TestOneofParsingLite {
       default: return false
       }
     }
+  #endif
   }
 
   init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+/// The following four messages are set up to test for wire compatibility between
+/// packed and non-packed repeated fields. We use the field number 2048, because
+/// that is large enough to require a 3-byte varint for the tag.
+struct ProtobufUnittest_PackedInt32 {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var repeatedInt32: [Int32] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct ProtobufUnittest_NonPackedInt32 {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var repeatedInt32: [Int32] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct ProtobufUnittest_PackedFixed32 {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var repeatedFixed32: [UInt32] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct ProtobufUnittest_NonPackedFixed32 {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var repeatedFixed32: [UInt32] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
 }
 
 // MARK: - Extension support defined in unittest_lite.proto.
@@ -5532,6 +5621,122 @@ extension ProtobufUnittest_TestOneofParsingLite: SwiftProtobuf.Message, SwiftPro
       }
       if !storagesAreEqual {return false}
     }
+    if unknownFields != other.unknownFields {return false}
+    return true
+  }
+}
+
+extension ProtobufUnittest_PackedInt32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PackedInt32"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    2048: .standard(proto: "repeated_int32"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 2048: try decoder.decodeRepeatedInt32Field(value: &self.repeatedInt32)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.repeatedInt32.isEmpty {
+      try visitor.visitPackedInt32Field(value: self.repeatedInt32, fieldNumber: 2048)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  func _protobuf_generated_isEqualTo(other: ProtobufUnittest_PackedInt32) -> Bool {
+    if self.repeatedInt32 != other.repeatedInt32 {return false}
+    if unknownFields != other.unknownFields {return false}
+    return true
+  }
+}
+
+extension ProtobufUnittest_NonPackedInt32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".NonPackedInt32"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    2048: .standard(proto: "repeated_int32"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 2048: try decoder.decodeRepeatedInt32Field(value: &self.repeatedInt32)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.repeatedInt32.isEmpty {
+      try visitor.visitRepeatedInt32Field(value: self.repeatedInt32, fieldNumber: 2048)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  func _protobuf_generated_isEqualTo(other: ProtobufUnittest_NonPackedInt32) -> Bool {
+    if self.repeatedInt32 != other.repeatedInt32 {return false}
+    if unknownFields != other.unknownFields {return false}
+    return true
+  }
+}
+
+extension ProtobufUnittest_PackedFixed32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PackedFixed32"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    2048: .standard(proto: "repeated_fixed32"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 2048: try decoder.decodeRepeatedFixed32Field(value: &self.repeatedFixed32)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.repeatedFixed32.isEmpty {
+      try visitor.visitPackedFixed32Field(value: self.repeatedFixed32, fieldNumber: 2048)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  func _protobuf_generated_isEqualTo(other: ProtobufUnittest_PackedFixed32) -> Bool {
+    if self.repeatedFixed32 != other.repeatedFixed32 {return false}
+    if unknownFields != other.unknownFields {return false}
+    return true
+  }
+}
+
+extension ProtobufUnittest_NonPackedFixed32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".NonPackedFixed32"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    2048: .standard(proto: "repeated_fixed32"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 2048: try decoder.decodeRepeatedFixed32Field(value: &self.repeatedFixed32)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.repeatedFixed32.isEmpty {
+      try visitor.visitRepeatedFixed32Field(value: self.repeatedFixed32, fieldNumber: 2048)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  func _protobuf_generated_isEqualTo(other: ProtobufUnittest_NonPackedFixed32) -> Bool {
+    if self.repeatedFixed32 != other.repeatedFixed32 {return false}
     if unknownFields != other.unknownFields {return false}
     return true
   }

@@ -67,7 +67,7 @@ class FileGenerator {
         // the file is an empty path. That never seems to have comments on it.
         // https://github.com/google/protobuf/issues/2249 opened to figure out
         // the right way to do this since the syntax entry is optional.
-        let syntaxPath = [Google_Protobuf_FileDescriptorProto.FieldNumbers.syntax]
+        let syntaxPath = IndexPath(index: Google_Protobuf_FileDescriptorProto.FieldNumbers.syntax)
         if let syntaxLocation = fileDescriptor.sourceCodeInfoLocation(path: syntaxPath) {
           let comments = syntaxLocation.asSourceComment(commentPrefix: "///",
                                                         leadingDetachedPrefix: "//")
@@ -117,10 +117,19 @@ class FileGenerator {
 
         for e in enums {
             e.generateMainEnum(printer: &p)
+            e.generateCaseIterable(printer: &p)
         }
 
         for m in messages {
             m.generateMainStruct(printer: &p, parent: nil, errorString: &errorString)
+
+            var caseIterablePrinter = CodePrinter()
+            m.generateEnumCaseIterable(printer: &caseIterablePrinter)
+            if !caseIterablePrinter.isEmpty {
+              p.print("\n#if swift(>=4.2)\n")
+              p.print(caseIterablePrinter.content)
+              p.print("\n#endif  // swift(>=4.2)\n")
+            }
         }
 
         if !extensionSet.isEmpty {

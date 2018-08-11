@@ -1,4 +1,4 @@
-// swift-tools-version:4.0
+// swift-tools-version:4.2
 
 // Package.swift
 //
@@ -31,5 +31,5 @@ let package = Package(
     .testTarget(name: "SwiftProtobufPluginLibraryTests",
                 dependencies: ["SwiftProtobufPluginLibrary"]),
   ],
-  swiftLanguageVersions: [3, 4]
+  swiftLanguageVersions: [.v3, .v4, .v4_2]
 )

@@ -79,6 +79,17 @@ public enum Google_Protobuf_NullValue: SwiftProtobuf.Enum {
 
 }
 
+#if swift(>=4.2)
+
+extension Google_Protobuf_NullValue: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static var allCases: [Google_Protobuf_NullValue] = [
+    .nullValue,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
 /// `Struct` represents a structured data value, consisting of fields
 /// which map to dynamically typed values. In some languages, `Struct`
 /// might be supported by a native representation. For example, in
@@ -188,6 +199,7 @@ public struct Google_Protobuf_Value {
     /// Represents a repeated `Value`.
     case listValue(Google_Protobuf_ListValue)
 
+  #if !swift(>=4.1)
     public static func ==(lhs: Google_Protobuf_Value.OneOf_Kind, rhs: Google_Protobuf_Value.OneOf_Kind) -> Bool {
       switch (lhs, rhs) {
       case (.nullValue(let l), .nullValue(let r)): return l == r
@@ -199,6 +211,7 @@ public struct Google_Protobuf_Value {
       default: return false
       }
     }
+  #endif
   }
 
   public init() {}

@@ -78,6 +78,14 @@ enum Proto2PreserveUnknownEnumUnittest_MyEnum: SwiftProtobuf.Enum {
 
 }
 
+#if swift(>=4.2)
+
+extension Proto2PreserveUnknownEnumUnittest_MyEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 struct Proto2PreserveUnknownEnumUnittest_MyMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -123,6 +131,7 @@ struct Proto2PreserveUnknownEnumUnittest_MyMessage {
     case oneofE1(Proto2PreserveUnknownEnumUnittest_MyEnum)
     case oneofE2(Proto2PreserveUnknownEnumUnittest_MyEnum)
 
+  #if !swift(>=4.1)
     static func ==(lhs: Proto2PreserveUnknownEnumUnittest_MyMessage.OneOf_O, rhs: Proto2PreserveUnknownEnumUnittest_MyMessage.OneOf_O) -> Bool {
       switch (lhs, rhs) {
       case (.oneofE1(let l), .oneofE1(let r)): return l == r
@@ -130,6 +139,7 @@ struct Proto2PreserveUnknownEnumUnittest_MyMessage {
       default: return false
       }
     }
+  #endif
   }
 
   init() {}

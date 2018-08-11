@@ -432,7 +432,8 @@ extension Test_Enum {
         ("testUnknownValues", testUnknownValues),
         ("testEnumPrefixStripping", testEnumPrefixStripping),
         ("testEnumPrefixStripping_TextFormat", testEnumPrefixStripping_TextFormat),
-        ("testEnumPrefixStripping_JSON", testEnumPrefixStripping_JSON)
+        ("testEnumPrefixStripping_JSON", testEnumPrefixStripping_JSON),
+        ("testCaseIterable", testCaseIterable)
     ]
 }
 
@@ -454,7 +455,8 @@ extension Test_Enum_Proto2 {
         ("testUnknownValues", testUnknownValues),
         ("testEnumPrefixStripping", testEnumPrefixStripping),
         ("testEnumPrefixStripping_TextFormat", testEnumPrefixStripping_TextFormat),
-        ("testEnumPrefixStripping_JSON", testEnumPrefixStripping_JSON)
+        ("testEnumPrefixStripping_JSON", testEnumPrefixStripping_JSON),
+        ("testCaseIterable", testCaseIterable)
     ]
 }
 
@@ -546,7 +548,7 @@ extension Test_JSON {
         ("testOptionalString", testOptionalString),
         ("testOptionalString_controlCharacters", testOptionalString_controlCharacters),
         ("testOptionalBytes", testOptionalBytes),
-        ("testOptionalBytes2", testOptionalBytes2),
+        ("testOptionalBytes_escapes", testOptionalBytes_escapes),
         ("testOptionalBytes_roundtrip", testOptionalBytes_roundtrip),
         ("testOptionalNestedMessage", testOptionalNestedMessage),
         ("testOptionalNestedEnum", testOptionalNestedEnum),
@@ -583,7 +585,8 @@ extension Test_JSONrepeated {
 
 extension Test_JSONDecodingOptions {
     static var allTests = [
-        ("testMessageDepthLimit", testMessageDepthLimit)
+        ("testMessageDepthLimit", testMessageDepthLimit),
+        ("testIgnoreUnknownFields", testIgnoreUnknownFields)
     ]
 }
 

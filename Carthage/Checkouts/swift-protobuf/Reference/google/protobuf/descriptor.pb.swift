@@ -590,6 +590,18 @@ struct Google_Protobuf_FieldDescriptorProto {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
+#if swift(>=4.2)
+
+extension Google_Protobuf_FieldDescriptorProto.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension Google_Protobuf_FieldDescriptorProto.Label: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 /// Describes a oneof.
 struct Google_Protobuf_OneofDescriptorProto {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1080,6 +1092,30 @@ struct Google_Protobuf_FileOptions: SwiftProtobuf.ExtensibleMessage {
   /// Clears the value of `phpNamespace`. Subsequent reads from it will return its default value.
   mutating func clearPhpNamespace() {_storage._phpNamespace = nil}
 
+  /// Use this option to change the namespace of php generated metadata classes.
+  /// Default is empty. When this option is empty, the proto file name will be used
+  /// for determining the namespace.
+  var phpMetadataNamespace: String {
+    get {return _storage._phpMetadataNamespace ?? String()}
+    set {_uniqueStorage()._phpMetadataNamespace = newValue}
+  }
+  /// Returns true if `phpMetadataNamespace` has been explicitly set.
+  var hasPhpMetadataNamespace: Bool {return _storage._phpMetadataNamespace != nil}
+  /// Clears the value of `phpMetadataNamespace`. Subsequent reads from it will return its default value.
+  mutating func clearPhpMetadataNamespace() {_storage._phpMetadataNamespace = nil}
+
+  /// Use this option to change the package of ruby generated classes. Default
+  /// is empty. When this option is not set, the package name will be used for
+  /// determining the ruby package.
+  var rubyPackage: String {
+    get {return _storage._rubyPackage ?? String()}
+    set {_uniqueStorage()._rubyPackage = newValue}
+  }
+  /// Returns true if `rubyPackage` has been explicitly set.
+  var hasRubyPackage: Bool {return _storage._rubyPackage != nil}
+  /// Clears the value of `rubyPackage`. Subsequent reads from it will return its default value.
+  mutating func clearRubyPackage() {_storage._rubyPackage = nil}
+
   /// The parser stores options it doesn't recognize here.
   /// See the documentation for the "Options" section above.
   var uninterpretedOption: [Google_Protobuf_UninterpretedOption] {
@@ -1130,6 +1166,14 @@ struct Google_Protobuf_FileOptions: SwiftProtobuf.ExtensibleMessage {
   var _protobuf_extensionFieldValues = SwiftProtobuf.ExtensionFieldValueSet()
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension Google_Protobuf_FileOptions.OptimizeMode: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct Google_Protobuf_MessageOptions: SwiftProtobuf.ExtensibleMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1426,6 +1470,18 @@ struct Google_Protobuf_FieldOptions: SwiftProtobuf.ExtensibleMessage {
   fileprivate var _weak: Bool? = nil
 }
 
+#if swift(>=4.2)
+
+extension Google_Protobuf_FieldOptions.CType: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension Google_Protobuf_FieldOptions.JSType: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 struct Google_Protobuf_OneofOptions: SwiftProtobuf.ExtensibleMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1614,6 +1670,14 @@ struct Google_Protobuf_MethodOptions: SwiftProtobuf.ExtensibleMessage {
   fileprivate var _deprecated: Bool? = nil
   fileprivate var _idempotencyLevel: Google_Protobuf_MethodOptions.IdempotencyLevel? = nil
 }
+
+#if swift(>=4.2)
+
+extension Google_Protobuf_MethodOptions.IdempotencyLevel: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 /// A message representing a option the parser does not recognize. This only
 /// appears in options protos created by the compiler::Parser class.
@@ -3152,6 +3216,8 @@ extension Google_Protobuf_FileOptions: SwiftProtobuf.Message, SwiftProtobuf._Mes
     39: .standard(proto: "swift_prefix"),
     40: .standard(proto: "php_class_prefix"),
     41: .standard(proto: "php_namespace"),
+    44: .standard(proto: "php_metadata_namespace"),
+    45: .standard(proto: "ruby_package"),
     999: .standard(proto: "uninterpreted_option"),
   ]
 
@@ -3174,6 +3240,8 @@ extension Google_Protobuf_FileOptions: SwiftProtobuf.Message, SwiftProtobuf._Mes
     var _swiftPrefix: String? = nil
     var _phpClassPrefix: String? = nil
     var _phpNamespace: String? = nil
+    var _phpMetadataNamespace: String? = nil
+    var _rubyPackage: String? = nil
     var _uninterpretedOption: [Google_Protobuf_UninterpretedOption] = []
 
     static let defaultInstance = _StorageClass()
@@ -3199,6 +3267,8 @@ extension Google_Protobuf_FileOptions: SwiftProtobuf.Message, SwiftProtobuf._Mes
       _swiftPrefix = source._swiftPrefix
       _phpClassPrefix = source._phpClassPrefix
       _phpNamespace = source._phpNamespace
+      _phpMetadataNamespace = source._phpMetadataNamespace
+      _rubyPackage = source._rubyPackage
       _uninterpretedOption = source._uninterpretedOption
     }
   }
@@ -3241,6 +3311,8 @@ extension Google_Protobuf_FileOptions: SwiftProtobuf.Message, SwiftProtobuf._Mes
         case 40: try decoder.decodeSingularStringField(value: &_storage._phpClassPrefix)
         case 41: try decoder.decodeSingularStringField(value: &_storage._phpNamespace)
         case 42: try decoder.decodeSingularBoolField(value: &_storage._phpGenericServices)
+        case 44: try decoder.decodeSingularStringField(value: &_storage._phpMetadataNamespace)
+        case 45: try decoder.decodeSingularStringField(value: &_storage._rubyPackage)
         case 999: try decoder.decodeRepeatedMessageField(value: &_storage._uninterpretedOption)
         case 1000..<536870912:
           try decoder.decodeExtensionField(values: &_protobuf_extensionFieldValues, messageType: Google_Protobuf_FileOptions.self, fieldNumber: fieldNumber)
@@ -3306,6 +3378,12 @@ extension Google_Protobuf_FileOptions: SwiftProtobuf.Message, SwiftProtobuf._Mes
       if let v = _storage._phpGenericServices {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 42)
       }
+      if let v = _storage._phpMetadataNamespace {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 44)
+      }
+      if let v = _storage._rubyPackage {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 45)
+      }
       if !_storage._uninterpretedOption.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._uninterpretedOption, fieldNumber: 999)
       }
@@ -3337,6 +3415,8 @@ extension Google_Protobuf_FileOptions: SwiftProtobuf.Message, SwiftProtobuf._Mes
         if _storage._swiftPrefix != other_storage._swiftPrefix {return false}
         if _storage._phpClassPrefix != other_storage._phpClassPrefix {return false}
         if _storage._phpNamespace != other_storage._phpNamespace {return false}
+        if _storage._phpMetadataNamespace != other_storage._phpMetadataNamespace {return false}
+        if _storage._rubyPackage != other_storage._rubyPackage {return false}
         if _storage._uninterpretedOption != other_storage._uninterpretedOption {return false}
         return true
       }

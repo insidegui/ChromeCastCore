@@ -86,6 +86,14 @@ enum ProtobufUnittestNoArena_ForeignEnum: SwiftProtobuf.Enum {
 
 }
 
+#if swift(>=4.2)
+
+extension ProtobufUnittestNoArena_ForeignEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 /// This proto includes every type of field in both singular and repeated
 /// forms.
 struct ProtobufUnittestNoArena_TestAllTypes {
@@ -692,6 +700,7 @@ struct ProtobufUnittestNoArena_TestAllTypes {
     case oneofBytes(Data)
     case lazyOneofNestedMessage(ProtobufUnittestNoArena_TestAllTypes.NestedMessage)
 
+  #if !swift(>=4.1)
     static func ==(lhs: ProtobufUnittestNoArena_TestAllTypes.OneOf_OneofField, rhs: ProtobufUnittestNoArena_TestAllTypes.OneOf_OneofField) -> Bool {
       switch (lhs, rhs) {
       case (.oneofUint32(let l), .oneofUint32(let r)): return l == r
@@ -702,6 +711,7 @@ struct ProtobufUnittestNoArena_TestAllTypes {
       default: return false
       }
     }
+  #endif
   }
 
   enum NestedEnum: SwiftProtobuf.Enum {
@@ -808,6 +818,14 @@ struct ProtobufUnittestNoArena_TestAllTypes {
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension ProtobufUnittestNoArena_TestAllTypes.NestedEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 /// Define these after TestAllTypes to make sure the compiler can handle
 /// that.

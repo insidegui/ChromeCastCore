@@ -489,6 +489,7 @@ struct ProtobufUnittest_Message3 {
     case oneofMessage(ProtobufUnittest_Message3)
     case oneofEnum(ProtobufUnittest_Message3.Enum)
 
+  #if !swift(>=4.1)
     static func ==(lhs: ProtobufUnittest_Message3.OneOf_O, rhs: ProtobufUnittest_Message3.OneOf_O) -> Bool {
       switch (lhs, rhs) {
       case (.oneofInt32(let l), .oneofInt32(let r)): return l == r
@@ -511,6 +512,7 @@ struct ProtobufUnittest_Message3 {
       default: return false
       }
     }
+  #endif
   }
 
   enum Enum: SwiftProtobuf.Enum {
@@ -551,6 +553,20 @@ struct ProtobufUnittest_Message3 {
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension ProtobufUnittest_Message3.Enum: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [ProtobufUnittest_Message3.Enum] = [
+    .foo,
+    .bar,
+    .baz,
+    .extra3,
+  ]
+}
+
+#endif  // swift(>=4.2)
 
 struct ProtobufUnittest_Msg3NoStorage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the

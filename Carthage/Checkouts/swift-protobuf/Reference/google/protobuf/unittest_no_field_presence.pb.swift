@@ -82,6 +82,19 @@ enum Proto2NofieldpresenceUnittest_ForeignEnum: SwiftProtobuf.Enum {
 
 }
 
+#if swift(>=4.2)
+
+extension Proto2NofieldpresenceUnittest_ForeignEnum: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [Proto2NofieldpresenceUnittest_ForeignEnum] = [
+    .foreignFoo,
+    .foreignBar,
+    .foreignBaz,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
 /// This proto includes every type of field in both singular and repeated
 /// forms.
 struct Proto2NofieldpresenceUnittest_TestAllTypes {
@@ -387,6 +400,7 @@ struct Proto2NofieldpresenceUnittest_TestAllTypes {
     case oneofString(String)
     case oneofEnum(Proto2NofieldpresenceUnittest_TestAllTypes.NestedEnum)
 
+  #if !swift(>=4.1)
     static func ==(lhs: Proto2NofieldpresenceUnittest_TestAllTypes.OneOf_OneofField, rhs: Proto2NofieldpresenceUnittest_TestAllTypes.OneOf_OneofField) -> Bool {
       switch (lhs, rhs) {
       case (.oneofUint32(let l), .oneofUint32(let r)): return l == r
@@ -396,6 +410,7 @@ struct Proto2NofieldpresenceUnittest_TestAllTypes {
       default: return false
       }
     }
+  #endif
   }
 
   enum NestedEnum: SwiftProtobuf.Enum {
@@ -445,6 +460,19 @@ struct Proto2NofieldpresenceUnittest_TestAllTypes {
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension Proto2NofieldpresenceUnittest_TestAllTypes.NestedEnum: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [Proto2NofieldpresenceUnittest_TestAllTypes.NestedEnum] = [
+    .foo,
+    .bar,
+    .baz,
+  ]
+}
+
+#endif  // swift(>=4.2)
 
 struct Proto2NofieldpresenceUnittest_TestProto2Required {
   // SwiftProtobuf.Message conformance is added in an extension below. See the

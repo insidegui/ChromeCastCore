@@ -64,6 +64,14 @@ enum SDTTopLevelEnum: SwiftProtobuf.Enum {
 
 }
 
+#if swift(>=4.2)
+
+extension SDTTopLevelEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 struct SDTTopLevelMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -132,6 +140,7 @@ struct SDTTopLevelMessage {
     case field5(SDTTopLevelMessage.SubMessage)
     case field6(SDTTopLevelMessage2)
 
+  #if !swift(>=4.1)
     static func ==(lhs: SDTTopLevelMessage.OneOf_O, rhs: SDTTopLevelMessage.OneOf_O) -> Bool {
       switch (lhs, rhs) {
       case (.field3(let l), .field3(let r)): return l == r
@@ -141,6 +150,7 @@ struct SDTTopLevelMessage {
       default: return false
       }
     }
+  #endif
   }
 
   enum SubEnum: SwiftProtobuf.Enum {
@@ -215,6 +225,14 @@ struct SDTTopLevelMessage {
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension SDTTopLevelMessage.SubEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct SDTTopLevelMessage2 {
   // SwiftProtobuf.Message conformance is added in an extension below. See the

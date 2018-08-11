@@ -82,6 +82,14 @@ enum ProtobufTestMessages_Proto2_ForeignEnumProto2: SwiftProtobuf.Enum {
 
 }
 
+#if swift(>=4.2)
+
+extension ProtobufTestMessages_Proto2_ForeignEnumProto2: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 /// This proto includes every type of field in both singular and repeated
 /// forms.
 ///
@@ -758,6 +766,7 @@ struct ProtobufTestMessages_Proto2_TestAllTypesProto2: SwiftProtobuf.ExtensibleM
     case oneofDouble(Double)
     case oneofEnum(ProtobufTestMessages_Proto2_TestAllTypesProto2.NestedEnum)
 
+  #if !swift(>=4.1)
     static func ==(lhs: ProtobufTestMessages_Proto2_TestAllTypesProto2.OneOf_OneofField, rhs: ProtobufTestMessages_Proto2_TestAllTypesProto2.OneOf_OneofField) -> Bool {
       switch (lhs, rhs) {
       case (.oneofUint32(let l), .oneofUint32(let r)): return l == r
@@ -772,6 +781,7 @@ struct ProtobufTestMessages_Proto2_TestAllTypesProto2: SwiftProtobuf.ExtensibleM
       default: return false
       }
     }
+  #endif
   }
 
   enum NestedEnum: SwiftProtobuf.Enum {
@@ -930,6 +940,14 @@ struct ProtobufTestMessages_Proto2_TestAllTypesProto2: SwiftProtobuf.ExtensibleM
   var _protobuf_extensionFieldValues = SwiftProtobuf.ExtensionFieldValueSet()
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension ProtobufTestMessages_Proto2_TestAllTypesProto2.NestedEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct ProtobufTestMessages_Proto2_ForeignMessageProto2 {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
