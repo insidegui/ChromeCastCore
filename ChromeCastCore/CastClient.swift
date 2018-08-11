@@ -403,7 +403,7 @@ public final class CastClient: NSObject {
             do {
                 let payload = try JSONDecoder().decode(CastStatusPayload.self, from: json)
 
-                guard let app = payload.status?.apps.first else {
+                guard let app = payload.status?.apps?.first else {
                     completion(CastError.launch("Unable to get launched app instance"), nil)
                     return
                 }
@@ -585,6 +585,9 @@ public final class CastClient: NSObject {
                 }
             case .status:
                 do {
+                    if let rawJSON = String(data: data, encoding: .utf8) {
+                        print(rawJSON)
+                    }
                     let payload = try JSONDecoder().decode(CastStatusPayload.self, from: data)
 
                     self.currentStatus = payload.status
@@ -631,8 +634,8 @@ public final class CastClient: NSObject {
     }
     
     private func handleStatusChange(from oldStatus: CastStatus, to newStatus: CastStatus) {
-        if let oldApp = oldStatus.apps.first {
-            if oldApp.transportId != newStatus.apps.first?.transportId {
+        if let oldApp = oldStatus.apps?.first {
+            if oldApp.transportId != newStatus.apps?.first?.transportId {
                 // stop sending heartbeats to closed app
                 stopBeating(id: oldApp.transportId)
             }

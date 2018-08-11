@@ -37,13 +37,13 @@ final class CastStatusPayload: NSObject, Codable {
 public final class CastStatus: NSObject, Codable {
     
     public var volume: CastVolume = CastVolume()
-    public var apps: [CastApp] = []
+    public var apps: [CastApp]?
     
     public override var description: String {
         return """
                CastStatus(volume: \(volume.level),
                           muted: \(volume.muted),
-                          apps: \(apps))
+                          apps: \(String(describing: apps))
                """
     }
 
