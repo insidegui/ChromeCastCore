@@ -49,7 +49,7 @@ final class CastRequest: NSObject {
     
 }
 
-public final class CastClient: NSObject {
+@objcMembers public final class CastClient: NSObject {
 
     private let log = OSLog(subsystem: "ChromeCastCore", category: "CastClient")
 

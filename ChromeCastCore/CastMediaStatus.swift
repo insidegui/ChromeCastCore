@@ -30,7 +30,7 @@ final class CastMediaStatusPayload: NSObject, Codable {
 
 }
 
-public final class CastMediaStatus: NSObject, Codable {
+@objcMembers public final class CastMediaStatus: NSObject, Codable {
     
     public var mediaSessionId: Int = 0
     public var playbackRate: Int = 1

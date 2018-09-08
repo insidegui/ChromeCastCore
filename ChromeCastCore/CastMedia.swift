@@ -16,7 +16,7 @@ public enum CastMediaStreamType: String {
     case live = "LIVE"
 }
 
-public final class CastMedia: NSObject {
+@objcMembers public final class CastMedia: NSObject {
     
     public var title: String
     public var url: URL

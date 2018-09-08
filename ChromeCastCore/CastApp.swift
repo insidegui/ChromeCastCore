@@ -13,7 +13,7 @@ public enum CastAppIdentifier: String {
     case youTube = "YouTube"
 }
 
-public final class CastApp: NSObject, Codable {
+@objcMembers public final class CastApp: NSObject, Codable {
     
     public var id: String = ""
     public var displayName: String = ""

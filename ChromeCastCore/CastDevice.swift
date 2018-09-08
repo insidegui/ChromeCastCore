@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class CastDevice: NSObject, NSCopying {
+@objcMembers public final class CastDevice: NSObject, NSCopying {
     
     public private(set) var id: String
     public private(set) var name: String

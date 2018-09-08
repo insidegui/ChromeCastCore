@@ -20,7 +20,7 @@ public final class CastVolume: NSObject, Codable {
 
 }
 
-final class CastStatusPayload: NSObject, Codable {
+@objcMembers final class CastStatusPayload: NSObject, Codable {
 
     var type: CastMessageType = CastMessageType.status
     var requestId: Int?
