@@ -19,7 +19,7 @@ extension CastDevice {
     
 }
 
-public final class CastDeviceScanner: NSObject {
+@objcMembers public final class CastDeviceScanner: NSObject {
     
     public static let DeviceListDidChange = Notification.Name(rawValue: "DeviceScannerDeviceListDidChangeNotification")
     
