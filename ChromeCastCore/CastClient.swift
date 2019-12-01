@@ -223,8 +223,8 @@ final class CastRequest: NSObject {
         }
     }
     
-    private lazy var reader: CASTV2PlatformReader = {
-        return CASTV2PlatformReader(stream: self.inputStream)
+    private lazy var reader: PlatformReader = {
+        return PlatformReader(stream: self.inputStream)
     }()
     
     fileprivate func readStream() {
