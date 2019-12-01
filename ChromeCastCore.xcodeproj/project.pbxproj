@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4DB1771323941BED00D8A311 /* PlatformReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB1771223941BED00D8A311 /* PlatformReader.swift */; };
 		DD15225D1DBACFE4004B5762 /* CASTV2Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD15225C1DBACFE4004B5762 /* CASTV2Protocol.swift */; };
 		DD15225F1DBAD013004B5762 /* CastStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD15225E1DBAD013004B5762 /* CastStatus.swift */; };
 		DD1522611DBAD02D004B5762 /* CastApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1522601DBAD02D004B5762 /* CastApp.swift */; };
@@ -24,6 +25,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4DB1771023941BA000D8A311 /* PlatformReaderSPM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformReaderSPM.swift; sourceTree = "<group>"; };
+		4DB1771223941BED00D8A311 /* PlatformReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformReader.swift; sourceTree = "<group>"; };
 		DD15225C1DBACFE4004B5762 /* CASTV2Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CASTV2Protocol.swift; sourceTree = "<group>"; };
 		DD15225E1DBAD013004B5762 /* CastStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CastStatus.swift; sourceTree = "<group>"; };
 		DD1522601DBAD02D004B5762 /* CastApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CastApp.swift; sourceTree = "<group>"; };
@@ -59,6 +62,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4D73E4B823945CB300A466D2 /* CASTV2PlatformReader */ = {
+			isa = PBXGroup;
+			children = (
+				4D73E4BA23945CF900A466D2 /* include */,
+				DDA6A4221DB952B8005DFD4E /* CASTV2PlatformReader.m */,
+			);
+			path = CASTV2PlatformReader;
+			sourceTree = "<group>";
+		};
+		4D73E4BA23945CF900A466D2 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				DDA6A4211DB952B8005DFD4E /* CASTV2PlatformReader.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
 		DD1522621DBAD03D004B5762 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -92,6 +112,7 @@
 		DD674A2E1DB7E83400E1FC24 = {
 			isa = PBXGroup;
 			children = (
+				4D73E4B823945CB300A466D2 /* CASTV2PlatformReader */,
 				DD674A3A1DB7E83500E1FC24 /* ChromeCastCore */,
 				DD674A391DB7E83500E1FC24 /* Products */,
 				DDC239581DB8F73A00066B2F /* Frameworks */,
@@ -130,9 +151,9 @@
 		DDA6A4201DB9529E005DFD4E /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				4DB1771023941BA000D8A311 /* PlatformReaderSPM.swift */,
+				4DB1771223941BED00D8A311 /* PlatformReader.swift */,
 				DDD1B81A1DB911EE002D3E6B /* Proto */,
-				DDA6A4211DB952B8005DFD4E /* CASTV2PlatformReader.h */,
-				DDA6A4221DB952B8005DFD4E /* CASTV2PlatformReader.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -247,6 +268,7 @@
 				DDC239481DB83E0200066B2F /* CastClient.swift in Sources */,
 				DD15225D1DBACFE4004B5762 /* CASTV2Protocol.swift in Sources */,
 				DD1522681DBAD9B9004B5762 /* CastMedia.swift in Sources */,
+				4DB1771323941BED00D8A311 /* PlatformReader.swift in Sources */,
 				DDBA0D47208CBDD40075670F /* cast_channel.pb.swift in Sources */,
 				DDA6A4241DB952B8005DFD4E /* CASTV2PlatformReader.m in Sources */,
 				DD1522611DBAD02D004B5762 /* CastApp.swift in Sources */,
